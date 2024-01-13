@@ -1,0 +1,32 @@
+{
+    "name": "gp-webrtc-firebase",
+    "version": "1.0.0",
+    "description": "Greg's WebRTC",
+    "author": "Greg PFISTER",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/gp-webrtc/firebase/issues"
+    },
+    "homepage": "https://github.com/gp-webrtc/firebase#readme",
+    "repository": {
+        "type": "git",
+        "url": "git+ssh://git@github.com:gp-webrtc/firebase.git"
+    },
+    "keywords": [
+        "firebase",
+        "webrtc"
+    ],
+    "scripts": {
+        "deploy": "firebase-cli deploy --non-interactive -f --only firestore,functions,storage",
+        "emul": "firebase-cli emulators:start --only firestore,functions,storage",
+        "emul:build": "(cd functions && rm -rf dist && npm run build -- --watch | (cd ../ && npm run emul))",
+        "emul:export": "firebase-cli emulators:start --only firestore,functions,storage --export-on-exit ~/snapshots/",
+        "emul:build:export": "(cd functions && rm -rf dist && npm run build) && npm run emul:export",
+        "emul:import": "firebase-cli emulators:start --only auth,firestore,functions,storage --import ~/snapshots/ --export-on-exit",
+        "emul:build:import": "(cd functions && rm -rf dist && npm run build) && npm run emul:import"
+    },
+    "dependencies": {
+        "firebase-tools": "^13.0.3"
+    },
+    "devDependencies": {}
+}
