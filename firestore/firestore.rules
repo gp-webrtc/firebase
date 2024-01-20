@@ -22,21 +22,29 @@
 
 rules_version = '2';
 
-// service cloud.firestore {
-// match /databases/{database}/documents {
-//  match /{document=**} {
-//    allow read, write: if false;
-//  }
-// }
-// }
-
-// Allow read/write access to all users under any conditions
-// Warning: **NEVER** use this rule set in production; it allows
-// anyone to overwrite your entire database.
 service cloud.firestore {
-  match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if true;
+    match /databases/{database}/documents {
+
+        // Does the logged-in user match the requested userId?
+        function isUser(userId) {
+            return request.auth.uid == userId;
+        }
+
+        // // Verifies that the user creation is valid
+        // function isValidUserCreation() {
+        //     return request.resource.data.userId == request.auth.uid &&
+        //            request.resource.data.encrypted is string
+        // }
+
+        // For all documents
+        match /{document=**} {
+            allow read, write: if false;
+        }
+        // User documents
+        match /users/{userId}  {
+            allow read: if isUser(userId);
+            // allow create: if (isUser(userId) && isValidUserCreation());
+            allow create, update, delete: if false;
+        }
     }
-  }
 }

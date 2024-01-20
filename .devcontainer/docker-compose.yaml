@@ -35,6 +35,11 @@ services:
       - gp-webrtc-firebase-home:/home
     networks:
       - gp-webrtc-devenv-net
+  # gp-webrtc-coturn:
+  #   container_name: gp-webrtc-coturn
+  #   image: coturn/coturn
+  #   networks:
+  #     - gp-webrtc-devenv-net
 
 volumes:
   gp-webrtc-firebase-home:
