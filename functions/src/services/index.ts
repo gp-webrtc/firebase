@@ -20,20 +20,6 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import { initializeApp } from 'firebase-admin/app';
-import * as functions from 'firebase-functions';
+import { GPWUserService } from './user.service';
 
-import { userController } from './controllers';
-
-// Initialize firebase App
-initializeApp();
-
-export const user = {
-    // Auth triggers
-    onAccountCreated: functions
-        .runWith({ secrets: ['RANDOMMER_IO_API_KEY'] })
-        .region('europe-west3')
-        .auth.user()
-        .onCreate(userController.onAccountCreated),
-    onAccountDeleted: functions.region('europe-west3').auth.user().onDelete(userController.onAccountDeleted),
-};
+export const userService = new GPWUserService();

@@ -20,20 +20,12 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import { initializeApp } from 'firebase-admin/app';
-import * as functions from 'firebase-functions';
+import { Timestamp } from 'firebase-admin/firestore';
 
-import { userController } from './controllers';
-
-// Initialize firebase App
-initializeApp();
-
-export const user = {
-    // Auth triggers
-    onAccountCreated: functions
-        .runWith({ secrets: ['RANDOMMER_IO_API_KEY'] })
-        .region('europe-west3')
-        .auth.user()
-        .onCreate(userController.onAccountCreated),
-    onAccountDeleted: functions.region('europe-west3').auth.user().onDelete(userController.onAccountDeleted),
+export type GPWUser = {
+    userId: string;
+    isEncrypted: boolean;
+    encrypted: string;
+    creationDate: Timestamp;
+    modificationDate: Timestamp;
 };
