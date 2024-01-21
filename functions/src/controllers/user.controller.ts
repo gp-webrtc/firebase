@@ -25,7 +25,7 @@ import { EventContext } from 'firebase-functions/v1';
 import { UserRecord } from 'firebase-functions/v1/auth';
 // import { AuthBlockingEvent, HttpsError } from 'firebase-functions/v2/identity';
 import * as logger from 'firebase-functions/logger';
-import { userService } from '../services';
+import { userDeviceService, userService } from '../services';
 
 export class GPWUserController {
     async onAccountCreated(user: UserRecord, context: EventContext) {
@@ -43,7 +43,8 @@ export class GPWUserController {
     }
 
     async onAccountDeleted(user: UserRecord, context: EventContext) {
-        // Delete the user record
+        // Delete the user data
+        await userDeviceService.deleteAll(user.uid);
         await userService.delete(user.uid);
 
         // Log event

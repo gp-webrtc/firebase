@@ -20,5 +20,21 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-export type { GPWUser } from './user.model';
-export type { GPWUserDevice } from './user_device.model';
+import { firestore } from 'firebase-admin';
+import { GPWUserDevice } from '../models';
+
+export class GPWUserDeviceService {
+    async get(userId: string, deviceId: string): Promise<GPWUserDevice | undefined> {
+        const db = firestore();
+        return (await db.collection(`/users/${userId}/devices`).doc(deviceId).get())?.data() as GPWUserDevice;
+    }
+
+    async deleteAll(userId: string) {
+        const db = firestore();
+        const docs = await db.collection(`/users/${userId}/devices`).listDocuments();
+
+        for (const doc of docs) {
+            await doc.delete();
+        }
+    }
+}

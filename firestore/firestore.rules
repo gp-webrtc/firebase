@@ -40,11 +40,17 @@ service cloud.firestore {
         match /{document=**} {
             allow read, write: if false;
         }
+        
         // User documents
         match /users/{userId}  {
             allow read: if isUser(userId);
             // allow create: if (isUser(userId) && isValidUserCreation());
             allow create, update, delete: if false;
+
+            // User devices document
+            match /users/{userId}  {
+                allow read, write: if isUser(userId);
+            }
         }
     }
 }

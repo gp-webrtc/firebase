@@ -21,5 +21,7 @@
 //
 
 import { GPWUserService } from './user.service';
+import { GPWUserDeviceService } from './user_device.service';
 
 export const userService = new GPWUserService();
+export const userDeviceService = new GPWUserDeviceService();

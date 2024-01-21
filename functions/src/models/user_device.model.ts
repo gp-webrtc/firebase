@@ -20,5 +20,14 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-export type { GPWUser } from './user.model';
-export type { GPWUserDevice } from './user_device.model';
+import { Timestamp } from 'firebase-admin/firestore';
+
+export type GPWUserDevice = {
+    userId: string;
+    deviceId: string;
+    isEncrypted: boolean;
+    encrypted: string;
+    ipAddresses: string[];
+    creationDate: Timestamp;
+    modificationDate: Timestamp;
+};
