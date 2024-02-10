@@ -1,5 +1,5 @@
 //
-// gp-webrtc/firebase
+// gp-webrtc-firebase
 // Copyright (c) 2024, Greg PFISTER. MIT License.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -25,7 +25,7 @@ import { EventContext } from 'firebase-functions/v1';
 import { UserRecord } from 'firebase-functions/v1/auth';
 // import { AuthBlockingEvent, HttpsError } from 'firebase-functions/v2/identity';
 import * as logger from 'firebase-functions/logger';
-import { userDeviceService, userService } from '../services';
+import { userDeviceService, userFCMNotificationService, userService } from '../services';
 
 export class GPWUserController {
     async onAccountCreated(user: UserRecord, context: EventContext) {
@@ -45,12 +45,14 @@ export class GPWUserController {
     async onAccountDeleted(user: UserRecord, context: EventContext) {
         // Delete the user data
         await userDeviceService.deleteAll(user.uid);
+        await userFCMNotificationService.deleteAll(user.uid);
         await userService.delete(user.uid);
 
         // Log event
         logger.info(`User ${user.uid} deleted at ${context.timestamp.toString()}`);
     }
 
+    // ----> Cannot be used with anynimous accounts
     // async onBeforeAccountCreated(event: AuthBlockingEvent) {
     //     if (event.additionalUserInfo?.providerId !== 'anonymous') {
     //         throw new HttpsError('permission-denied', 'Only anonymous login allowed');
@@ -71,4 +73,5 @@ export class GPWUserController {
     //         await userSignInHistoryRecord.create(event.auth.uid, event);
     //     }
     // }
+    // <---- Cannot be used with anynimous accounts
 }

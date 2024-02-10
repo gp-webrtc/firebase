@@ -18,15 +18,14 @@
     ],
     "scripts": {
         "deploy": "firebase-cli deploy --non-interactive -f --only firestore,functions,storage",
-        "emul": "firebase-cli emulators:start --only firestore,functions,storage",
+        "emul": "firebase-cli emulators:start --only auth,firestore,functions,storage",
         "emul:build": "(cd functions && rm -rf dist && npm run build -- --watch | (cd ../ && npm run emul))",
-        "emul:export": "firebase-cli emulators:start --only firestore,functions,storage --export-on-exit ~/snapshots/",
+        "emul:export": "firebase-cli emulators:start --only auth,firestore,functions,storage --export-on-exit ~/snapshots/",
         "emul:build:export": "(cd functions && rm -rf dist && npm run build) && npm run emul:export",
         "emul:import": "firebase-cli emulators:start --only auth,firestore,functions,storage --import ~/snapshots/ --export-on-exit",
         "emul:build:import": "(cd functions && rm -rf dist && npm run build) && npm run emul:import"
     },
     "dependencies": {
-        "firebase-tools": "^13.0.3"
-    },
-    "devDependencies": {}
+        "firebase-tools": "^13.2.1"
+    }
 }

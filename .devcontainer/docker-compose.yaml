@@ -1,5 +1,5 @@
 #
-# gp-webrtc/firebase
+# gp-webrtc-firebase
 # Copyright (c) 2024, Greg PFISTER. MIT License.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -35,15 +35,27 @@ services:
       - gp-webrtc-firebase-home:/home
     networks:
       - gp-webrtc-devenv-net
-  # gp-webrtc-coturn:
-  #   container_name: gp-webrtc-coturn
-  #   image: coturn/coturn
-  #   networks:
-  #     - gp-webrtc-devenv-net
+  gp-webrtc-coturn:
+    container_name: gp-webrtc-coturn
+    image: coturn/coturn:4
+    network_mode: 'host'
+    expose:
+      - '3478'
+      # - '5349'
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '200k'
+        max-file: '10'
+    volumes:
+      - ./turnserver.conf:/etc/coturn/turnserver.conf:ro
+      # - /etc/localtime:/etc/localtime:ro
+      # - /etc/timezone:/etc/timezone:ro
 
 volumes:
   gp-webrtc-firebase-home:
     name: gp-webrtc-firebase-home
+
 networks:
   gp-webrtc-devenv-net:
     name: gp-webrtc-devenv-net

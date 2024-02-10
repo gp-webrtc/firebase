@@ -1,5 +1,5 @@
 //
-// gp-webrtc/firebase
+// gp-webrtc-firebase
 // Copyright (c) 2024, Greg PFISTER. MIT License.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -21,5 +21,7 @@
 //
 
 import { GPWUserController } from './user.controller';
+import { GPWUserFCMRegistrationTokenController } from './user_fcm_registration_token.controller';
 
 export const userController = new GPWUserController();
+export const userFCMRegistrationTokenController = new GPWUserFCMRegistrationTokenController();

@@ -1,5 +1,5 @@
 //
-// gp-webrtc/firebase
+// gp-webrtc-firebase
 // Copyright (c) 2024, Greg PFISTER. MIT License.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -23,7 +23,8 @@
 import { initializeApp } from 'firebase-admin/app';
 import * as functions from 'firebase-functions';
 
-import { userController } from './controllers';
+import { userController, userFCMRegistrationTokenController } from './controllers';
+import { onCall } from 'firebase-functions/v2/https';
 
 // Initialize firebase App
 initializeApp();
@@ -36,4 +37,12 @@ export const user = {
         .auth.user()
         .onCreate(userController.onAccountCreated),
     onAccountDeleted: functions.region('europe-west3').auth.user().onDelete(userController.onAccountDeleted),
+    insertOrUpdateFCMRegistrationToken: onCall(
+        { region: 'europe-west3' },
+        userFCMRegistrationTokenController.onInsertOrUpdateFunctionCalled
+    ),
+    deleteFCMRegistrationTokenDelete: onCall(
+        { region: 'europe-west3' },
+        userFCMRegistrationTokenController.onDeleteFunctionCalled
+    ),
 };

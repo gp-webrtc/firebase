@@ -1,5 +1,5 @@
 //
-// gp-webrtc/firebase
+// gp-webrtc-firebase
 // Copyright (c) 2024, Greg PFISTER. MIT License.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of 
@@ -30,11 +30,25 @@ service cloud.firestore {
             return request.auth.uid == userId;
         }
 
-        // // Verifies that the user creation is valid
-        // function isValidUserCreation() {
-        //     return request.resource.data.userId == request.auth.uid &&
-        //            request.resource.data.encrypted is string
-        // }
+        // Verifies that the user creation is valid
+        function isValidUserUpdate() {
+            return isValidUserEncryptedDataUpdate() || isValidUserSetingsUpdate();
+        }
+
+        function isValidUserEncryptedDataUpdate() {
+            return request.resource.data.userId == request.auth.uid &&
+                   request.resource.data.diff(resource.data).affectedKeys().hasOnly(['encrypted']) &&
+                   request.resource.data.encrypted is string;
+        }
+
+        function isValidUserSetingsUpdate() {
+            return request.resource.data.userId == request.auth.uid &&
+                   request.resource.data.diff(resource.data).affectedKeys().hasOnly(['settings']) &&
+                   request.resource.data.settings.notifications.isEnabled is bool &&
+                   request.resource.data.settings.notifications.onMessageReceived is bool &&
+                   request.resource.data.settings.notifications.onDeviceAdded is bool &&
+                   request.resource.data.settings.notifications.onDeviceRemoved is bool;
+        }
 
         // For all documents
         match /{document=**} {
@@ -44,12 +58,18 @@ service cloud.firestore {
         // User documents
         match /users/{userId}  {
             allow read: if isUser(userId);
-            // allow create: if (isUser(userId) && isValidUserCreation());
-            allow create, update, delete: if false;
+            allow create, delete: if false;
+            allow update: if (isUser(userId) && isValidUserUpdate());
 
             // User devices document
-            match /users/{userId}  {
+            match /devices/{deviceId}  {
                 allow read, write: if isUser(userId);
+            }
+
+            // User devices document
+            match /fcmRegistrationTokens/{tokenId}  {
+                allow read: if isUser(userId);
+                allow write: if false;
             }
         }
     }

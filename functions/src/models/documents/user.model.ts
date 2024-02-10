@@ -1,5 +1,5 @@
 //
-// gp-webrtc/firebase
+// gp-webrtc-firebase
 // Copyright (c) 2024, Greg PFISTER. MIT License.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -21,13 +21,13 @@
 //
 
 import { Timestamp } from 'firebase-admin/firestore';
+import { GPWUserSettings } from '../shared/user_settings.model';
 
-export type GPWUserDevice = {
+export type GPWUser = {
     userId: string;
-    deviceId: string;
     isEncrypted: boolean;
+    settings: GPWUserSettings;
     encrypted: string;
-    ipAddresses: string[];
     creationDate: Timestamp;
     modificationDate: Timestamp;
 };

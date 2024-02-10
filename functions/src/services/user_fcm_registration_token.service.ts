@@ -21,46 +21,50 @@
 //
 
 import { firestore } from 'firebase-admin';
-import { AuthBlockingEvent } from 'firebase-functions/v2/identity';
-import { GPWUser } from '../models';
 import { Timestamp } from 'firebase-admin/firestore';
 
-export class GPWUserService {
-    async get(userId: string): Promise<GPWUser | undefined> {
+import { GPWUserFCMRegistrationTokenDeviceType } from '../models/shared/user_fcm_registration_token_device.model';
+import { GPWUserFCMRegistrationToken } from '../models/documents/user_fcm_registration_token.model';
+
+export class GPWUserFCMRegistrationTokenService {
+    async get(userId: string, tokenId: string): Promise<GPWUserFCMRegistrationToken | undefined> {
         const db = firestore();
-        return (await db.collection('/users').doc(userId).get())?.data() as GPWUser;
+        return (
+            await db.collection(`/users/${userId}/fcmRegistrationTokens`).doc(tokenId).get()
+        ).data() as GPWUserFCMRegistrationToken;
     }
 
-    async create(userId: string, displayName: string) {
+    async save(userId: string, tokenId: string, data: GPWUserFCMRegistrationToken) {
+        const db = firestore();
+        await db.collection(`/users/${userId}/fcmRegistrationTokens`).doc(tokenId).update(data);
+    }
+
+    async create(userId: string, tokenId: string, token: string, deviceType: GPWUserFCMRegistrationTokenDeviceType) {
         const db = firestore();
         const ts = Timestamp.now();
 
-        // Create the user record
-        const user: GPWUser = {
+        const userToken: GPWUserFCMRegistrationToken = {
             userId: userId,
-            isEncrypted: false,
-            encrypted: Buffer.from(JSON.stringify({ displayName })).toString('base64'),
-            settings: {
-                notifications: {
-                    isEnabled: true,
-                    onMessageReceived: true,
-                    onDeviceAdded: true,
-                    onDeviceRemoved: true,
-                },
-            },
-            creationDate: ts,
+            tokenId: tokenId,
+            token,
+            deviceType,
             modificationDate: ts,
+            creationDate: ts,
         };
-        await db.collection('/users').doc(userId).create(user);
+
+        await db.collection(`/users/${userId}/fcmRegistrationTokens`).doc(tokenId).set(userToken);
     }
 
-    async updateLastSignIn(userId: string, event: AuthBlockingEvent) {
+    async delete(userId: string, tokenId: string) {
         const db = firestore();
-        await db.collection('/users').doc(userId).update({ lastSignInDate: event.timestamp });
+        await db.collection(`/users/${userId}/fcmRegistrationTokens`).doc(tokenId).delete();
     }
 
-    async delete(userId: string) {
+    async deleteAll(userId: string) {
         const db = firestore();
-        await db.collection('/users').doc(userId).delete();
+        const docs = await db.collection(`/users/${userId}/fcmRegistrationTokens`).listDocuments();
+        for (const doc of docs) {
+            await doc.delete();
+        }
     }
 }
