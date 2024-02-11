@@ -50,6 +50,15 @@ service cloud.firestore {
                    request.resource.data.settings.notifications.onDeviceRemoved is bool;
         }
 
+        function isValidUserNotificationUpdate() {
+            return request.resource.data.userId == request.auth.uid &&
+                   (    ( request.resource.data.diff(resource.data).affectedKeys().hasOnly(['wasRead']) &&
+                          request.resource.data.isUnread == true ) || 
+                        ( request.resource.data.diff(resource.data).affectedKeys().hasOnly(['wasReceived']) &&
+                          request.resource.data.isUnread == true ) 
+                   );
+        }
+
         // For all documents
         match /{document=**} {
             allow read, write: if false;
@@ -61,15 +70,21 @@ service cloud.firestore {
             allow create, delete: if false;
             allow update: if (isUser(userId) && isValidUserUpdate());
 
-            // User devices document
+            // User devices documents
             match /devices/{deviceId}  {
                 allow read, write: if isUser(userId);
             }
 
-            // User devices document
+            // User FCM registration token documents
             match /fcmRegistrationTokens/{tokenId}  {
-                allow read: if isUser(userId);
-                allow write: if false;
+                allow read, write: if false;
+            }
+
+            // User notifications dociments
+            match /notifications/{notificationId} {
+                allow read, delete: if isUser(userId);
+                allow update: if isUser(userId) && isValidUserNotificationUpdate();
+                allow create: if false;
             }
         }
     }

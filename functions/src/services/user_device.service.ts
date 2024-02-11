@@ -22,11 +22,21 @@
 
 import { firestore } from 'firebase-admin';
 import { GPWUserDevice } from '../models';
+import { Timestamp } from 'firebase-admin/firestore';
 
 export class GPWUserDeviceService {
     async get(userId: string, deviceId: string): Promise<GPWUserDevice | undefined> {
         const db = firestore();
         return (await db.collection(`/users/${userId}/devices`).doc(deviceId).get())?.data() as GPWUserDevice;
+    }
+
+    async save(userId: string, deviceId: string, device: GPWUserDevice) {
+        const ts = Timestamp.now();
+        const db = firestore();
+
+        device.modificationDate = ts;
+
+        await db.collection(`/users/${userId}/devices`).doc(deviceId).update(device);
     }
 
     async deleteAll(userId: string) {

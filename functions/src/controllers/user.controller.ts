@@ -21,35 +21,55 @@
 //
 
 import * as axios from 'axios';
+import { Timestamp } from 'firebase-admin/firestore';
 import { EventContext } from 'firebase-functions/v1';
+import { Change, FirestoreEvent, QueryDocumentSnapshot } from 'firebase-functions/v2/firestore';
 import { UserRecord } from 'firebase-functions/v1/auth';
-// import { AuthBlockingEvent, HttpsError } from 'firebase-functions/v2/identity';
-import * as logger from 'firebase-functions/logger';
-import { userDeviceService, userFCMNotificationService, userService } from '../services';
+
+import { userDeviceService, userFCMRegistrationTokenService, userNotificationService, userService } from '../services';
+import { GPWUser } from '../models';
 
 export class GPWUserController {
+    async onDocumentUpdated(event: FirestoreEvent<Change<QueryDocumentSnapshot> | undefined, { userId: string }>) {
+        const ts = Timestamp.now();
+
+        if (event.data) {
+            const userId = event.params.userId;
+            const before = event.data.before.data() as GPWUser;
+            const after = event.data.before.data() as GPWUser;
+            after.modificationDate = before.modificationDate;
+
+            if (
+                before.encrypted !== after.encrypted ||
+                before.isEncrypted !== after.isEncrypted ||
+                before.settings !== after.settings
+            ) {
+                after.modificationDate = ts;
+                await userService.save(userId, after);
+            }
+        }
+    }
+
     async onAccountCreated(user: UserRecord, context: EventContext) {
-        // Generate a randome display name
-        const result = await axios.default.get('https://randommer.io/api/Name?nameType=fullname&quantity=1', {
-            headers: { 'X-Api-Key': process.env.RANDOMMER_IO_API_KEY },
-        });
-        const displayName = result.data[0] ?? 'Nameless Joe';
+        if (context.authType === 'USER') {
+            // Generate a randome display name
+            const result = await axios.default.get('https://randommer.io/api/Name?nameType=fullname&quantity=1', {
+                headers: { 'X-Api-Key': process.env.RANDOMMER_IO_API_KEY },
+            });
+            const displayName = result.data[0] ?? 'Nameless Joe';
 
-        // Create the user record
-        await userService.create(user.uid, displayName);
-
-        // Log event
-        logger.info(`User ${user.uid} created at ${context.timestamp.toString()}`);
+            // Create the user record
+            await userService.create(user.uid, displayName);
+        }
     }
 
     async onAccountDeleted(user: UserRecord, context: EventContext) {
-        // Delete the user data
-        await userDeviceService.deleteAll(user.uid);
-        await userFCMNotificationService.deleteAll(user.uid);
-        await userService.delete(user.uid);
-
-        // Log event
-        logger.info(`User ${user.uid} deleted at ${context.timestamp.toString()}`);
+        if (context.authType === 'USER') {
+            await userDeviceService.deleteAll(user.uid);
+            await userFCMRegistrationTokenService.deleteAll(user.uid);
+            await userNotificationService.deleteAll(user.uid);
+            await userService.delete(user.uid);
+        }
     }
 
     // ----> Cannot be used with anynimous accounts

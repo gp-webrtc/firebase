@@ -23,11 +23,20 @@
 import { initializeApp } from 'firebase-admin/app';
 import * as functions from 'firebase-functions';
 
-import { userController, userFCMRegistrationTokenController } from './controllers';
+import {
+    userController,
+    userDeviceController,
+    userFCMRegistrationTokenController,
+    userNotificationController,
+} from './controllers';
 import { onCall } from 'firebase-functions/v2/https';
+import { onDocumentCreated, onDocumentDeleted, onDocumentUpdated } from 'firebase-functions/v2/firestore';
+import { setGlobalOptions } from 'firebase-functions/v2/options';
 
 // Initialize firebase App
 initializeApp();
+
+setGlobalOptions({ region: 'europe-west3' });
 
 export const user = {
     // Auth triggers
@@ -37,6 +46,16 @@ export const user = {
         .auth.user()
         .onCreate(userController.onAccountCreated),
     onAccountDeleted: functions.region('europe-west3').auth.user().onDelete(userController.onAccountDeleted),
+
+    // User documents
+    onUpdated: onDocumentUpdated('/users/{userId}', userController.onDocumentUpdated),
+
+    // User Device documents
+    onDeviceCreated: onDocumentCreated('users/{userId}/devices/{deviceId}', userDeviceController.onDocumentCreated),
+    onDeviceUpdated: onDocumentUpdated('users/{userId}/devices/{deviceId}', userDeviceController.onDocumentUpdated),
+    onDeviceDeleted: onDocumentDeleted('users/{userId}/devices/{deviceId}', userDeviceController.onDocumentDeleted),
+
+    // User FCM Registration token callable functions
     insertOrUpdateFCMRegistrationToken: onCall(
         { region: 'europe-west3' },
         userFCMRegistrationTokenController.onInsertOrUpdateFunctionCalled
@@ -44,5 +63,11 @@ export const user = {
     deleteFCMRegistrationTokenDelete: onCall(
         { region: 'europe-west3' },
         userFCMRegistrationTokenController.onDeleteFunctionCalled
+    ),
+
+    // User notification documents
+    onNotificationUpdated: onDocumentUpdated(
+        'users/{userId}/notifications/{notificationId}',
+        userNotificationController.onDocumentUpdated
     ),
 };

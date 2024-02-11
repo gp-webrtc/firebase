@@ -21,7 +21,11 @@
 //
 
 import { GPWUserController } from './user.controller';
+import { GPWUserDeviceController } from './user_device.controller';
 import { GPWUserFCMRegistrationTokenController } from './user_fcm_registration_token.controller';
+import { GPWUserNotificationController } from './user_notification.controller';
 
 export const userController = new GPWUserController();
+export const userDeviceController = new GPWUserDeviceController();
 export const userFCMRegistrationTokenController = new GPWUserFCMRegistrationTokenController();
+export const userNotificationController = new GPWUserNotificationController();

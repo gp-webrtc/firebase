@@ -21,48 +21,44 @@
 //
 
 import { firestore } from 'firebase-admin';
-import { GPWUser } from '../models';
 import { Timestamp } from 'firebase-admin/firestore';
+import { GPWUserNotification, GPWUserNotificationOptions } from '../models';
 
-export class GPWUserService {
-    async get(userId: string): Promise<GPWUser | undefined> {
-        const db = firestore();
-        return (await db.collection('/users').doc(userId).get())?.data() as GPWUser;
-    }
+export class GPWUserNotificationService {
+    static default = new GPWUserNotificationService();
 
-    async create(userId: string, displayName: string) {
+    async create(userId: string, options: GPWUserNotificationOptions) {
         const db = firestore();
         const ts = Timestamp.now();
 
-        // Create the user record
-        const user: GPWUser = {
-            userId: userId,
-            isEncrypted: false,
-            encrypted: Buffer.from(JSON.stringify({ displayName })).toString('base64'),
-            settings: {
-                notifications: {
-                    isEnabled: true,
-                    onMessageReceived: true,
-                    onDeviceAdded: true,
-                    onDeviceRemoved: true,
-                },
-            },
+        const notificationId = db.collection(`/users/${userId}/notifications`).doc().id;
+
+        const notification: GPWUserNotification = {
+            userId,
+            notificationId,
+            options: options,
+            wasRead: false,
+            wasReceived: false,
             creationDate: ts,
             modificationDate: ts,
         };
-        await db.collection('/users').doc(userId).create(user);
+        await db.collection(`/users/${userId}/notifications`).doc(notificationId).set(notification);
     }
 
-    async save(userId: string, user: GPWUser) {
+    async save(userId: string, notificationId: string, notification: GPWUserNotification) {
         const db = firestore();
         const ts = Timestamp.now();
 
-        user.modificationDate = ts;
-        await db.collection('/users').doc(userId).update(user);
+        notification.modificationDate = ts;
+
+        await db.collection(`/users/${userId}/notifications`).doc(notificationId).update(notification);
     }
 
-    async delete(userId: string) {
+    async deleteAll(userId: string) {
         const db = firestore();
-        await db.collection('/users').doc(userId).delete();
+        const docs = await db.collection(`/users/${userId}/notifications`).listDocuments();
+        for (const doc of docs) {
+            await doc.delete();
+        }
     }
 }

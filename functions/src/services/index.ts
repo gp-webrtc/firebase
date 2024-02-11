@@ -20,10 +20,15 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+import { GPWFCMService } from './fcm.service';
 import { GPWUserService } from './user.service';
 import { GPWUserDeviceService } from './user_device.service';
 import { GPWUserFCMRegistrationTokenService } from './user_fcm_registration_token.service';
+import { GPWUserNotificationService } from './user_notification.service';
+
+export const fcmService = new GPWFCMService();
 
 export const userService = new GPWUserService();
 export const userDeviceService = new GPWUserDeviceService();
-export const userFCMNotificationService = new GPWUserFCMRegistrationTokenService();
+export const userFCMRegistrationTokenService = new GPWUserFCMRegistrationTokenService();
+export const userNotificationService = new GPWUserNotificationService();

@@ -23,8 +23,7 @@
 import { firestore } from 'firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
 
-import { GPWUserFCMRegistrationTokenDeviceType } from '../models/shared/user_fcm_registration_token_device.model';
-import { GPWUserFCMRegistrationToken } from '../models/documents/user_fcm_registration_token.model';
+import { GPWUserFCMRegistrationTokenDeviceType, GPWUserFCMRegistrationToken } from '../models';
 
 export class GPWUserFCMRegistrationTokenService {
     async get(userId: string, tokenId: string): Promise<GPWUserFCMRegistrationToken | undefined> {
@@ -34,16 +33,17 @@ export class GPWUserFCMRegistrationTokenService {
         ).data() as GPWUserFCMRegistrationToken;
     }
 
-    async save(userId: string, tokenId: string, data: GPWUserFCMRegistrationToken) {
+    async getAll(userId: string): Promise<GPWUserFCMRegistrationToken[]> {
         const db = firestore();
-        await db.collection(`/users/${userId}/fcmRegistrationTokens`).doc(tokenId).update(data);
+        const query = await db.collection(`/users/${userId}/fcmRegistrationTokens`).get();
+        return query.docs.map((doc) => doc.data() as GPWUserFCMRegistrationToken);
     }
 
     async create(userId: string, tokenId: string, token: string, deviceType: GPWUserFCMRegistrationTokenDeviceType) {
         const db = firestore();
         const ts = Timestamp.now();
 
-        const userToken: GPWUserFCMRegistrationToken = {
+        const fcmRegistrationToken: GPWUserFCMRegistrationToken = {
             userId: userId,
             tokenId: tokenId,
             token,
@@ -52,7 +52,16 @@ export class GPWUserFCMRegistrationTokenService {
             creationDate: ts,
         };
 
-        await db.collection(`/users/${userId}/fcmRegistrationTokens`).doc(tokenId).set(userToken);
+        await db.collection(`/users/${userId}/fcmRegistrationTokens`).doc(tokenId).set(fcmRegistrationToken);
+    }
+
+    async save(userId: string, tokenId: string, fcmRegistrationToken: GPWUserFCMRegistrationToken) {
+        const ts = Timestamp.now();
+        const db = firestore();
+
+        fcmRegistrationToken.modificationDate = ts;
+
+        await db.collection(`/users/${userId}/fcmRegistrationTokens`).doc(tokenId).update(fcmRegistrationToken);
     }
 
     async delete(userId: string, tokenId: string) {

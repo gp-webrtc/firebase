@@ -20,16 +20,14 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-export type { GPWUser } from './documents/user.model';
-export type { GPWUserDevice } from './documents/user_device.model';
-export type { GPWUserFCMRegistrationToken } from './documents/user_fcm_registration_token.model';
-export type { GPWUserNotification } from './documents/user_notification.model';
+import { AndroidConfig, ApnsConfig, FcmOptions, WebpushConfig } from 'firebase-admin/messaging';
+import { GPWUserNotificationType } from './user_notification_type.model';
 
-export type { GPWUserFCMRegistrationTokenDeleteBody } from './functions/user_fcm_registration_token_delete_body.model';
-export type { GPWUserFCMRegistrationTokenInsertOrUpdateBody } from './functions/user_fcm_registration_token_insert_or_update_body.model';
-
-export type { GPWUserFCMRegistrationTokenDeviceType } from './shared/user_fcm_registration_token_device.model';
-export type { GPWUserNotificationMetadata } from './shared/user_notification_metadata.model';
-export type { GPWUserNotificationOptions } from './shared/user_notification_options.model';
-export type { GPWUserNotificationType } from './shared/user_notification_type.model';
-export type { GPWUserSettings } from './shared/user_settings.model';
+export type GPWUserNotificationMetadata = {
+    [key in GPWUserNotificationType]: {
+        android?: AndroidConfig;
+        webpush?: WebpushConfig;
+        apns?: ApnsConfig;
+        fcmOptions?: FcmOptions;
+    };
+};
