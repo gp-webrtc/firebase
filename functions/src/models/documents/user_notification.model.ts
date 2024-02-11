@@ -21,12 +21,13 @@
 //
 
 import { Timestamp } from 'firebase-admin/firestore';
-import { GPWUserNotificationOptions } from '../shared/user_notification_options.model';
+import { GPWUserNotificationType } from '..';
 
 export type GPWUserNotification = {
     userId: string;
     notificationId: string;
-    options: GPWUserNotificationOptions;
+    type: GPWUserNotificationType;
+    path: string;
     wasRead: boolean;
     wasReceived: boolean;
     creationDate: Timestamp;

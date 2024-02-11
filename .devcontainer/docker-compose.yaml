@@ -49,12 +49,15 @@ services:
         max-file: '10'
     volumes:
       - ./turnserver.conf:/etc/coturn/turnserver.conf:ro
+      - gp-webrtc-firebase-coturn:/var/lib
       # - /etc/localtime:/etc/localtime:ro
       # - /etc/timezone:/etc/timezone:ro
 
 volumes:
   gp-webrtc-firebase-home:
     name: gp-webrtc-firebase-home
+  gp-webrtc-firebase-coturn:
+    name: gp-webrtc-firebase-coturn
 
 networks:
   gp-webrtc-devenv-net:

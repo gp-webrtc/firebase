@@ -27,7 +27,6 @@ export type GPWUserDevice = {
     deviceId: string;
     isEncrypted: boolean;
     encrypted: string;
-    ipAddresses: string[];
     creationDate: Timestamp;
     modificationDate: Timestamp;
 };

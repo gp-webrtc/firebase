@@ -22,7 +22,7 @@
 
 import { firestore } from 'firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
-import { GPWUserNotification, GPWUserNotificationOptions } from '../models';
+import { GPWUserNotification, GPWUserNotificationOptions, GPWUserNotificationType } from '../models';
 
 export class GPWUserNotificationService {
     static default = new GPWUserNotificationService();
@@ -36,7 +36,7 @@ export class GPWUserNotificationService {
         const notification: GPWUserNotification = {
             userId,
             notificationId,
-            options: options,
+            ...this.documentData(options),
             wasRead: false,
             wasReceived: false,
             creationDate: ts,
@@ -59,6 +59,26 @@ export class GPWUserNotificationService {
         const docs = await db.collection(`/users/${userId}/notifications`).listDocuments();
         for (const doc of docs) {
             await doc.delete();
+        }
+    }
+
+    documentData(options: GPWUserNotificationOptions): { path: string; type: GPWUserNotificationType } {
+        switch (options.type) {
+            case 'onDeviceAdded':
+                return {
+                    path: `/users/${options.data.userId}/devices/${options.data.deviceId}`,
+                    type: options.type,
+                };
+            case 'onDeviceRemoved':
+                return {
+                    path: `/users/${options.data.userId}/devices/${options.data.deviceId}`,
+                    type: options.type,
+                };
+            case 'onMessageReceived':
+                return {
+                    path: '',
+                    type: options.type,
+                };
         }
     }
 }
