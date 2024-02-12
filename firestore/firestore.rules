@@ -44,7 +44,7 @@ service cloud.firestore {
         function isValidUserDeviceCreation(deviceId) {
             return request.resource.data.userId == request.auth.uid &&
                    request.resource.data.deviceId == deviceId &&
-                   request.resource.data.keys().hasOnly(['deviceId', 'encrypted', 'isEncrypted']) &&
+                   request.resource.data.keys().hasOnly(['userId', 'deviceId', 'encrypted', 'isEncrypted', 'creationDate', 'modificationDate']) &&
                    request.resource.data.isEncrypted is bool &&
                    request.resource.data.encrypted is string;
         }
