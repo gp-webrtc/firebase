@@ -38,6 +38,8 @@ initializeApp();
 
 setGlobalOptions({ region: 'europe-west3' });
 
+const enforceAppCheck = !process.env.GPW_FIREBASE_EMULATOR ? true : false;
+
 export const user = {
     // Auth triggers
     onAccountCreated: functions
@@ -57,11 +59,11 @@ export const user = {
 
     // User FCM Registration token callable functions
     insertOrUpdateFCMRegistrationToken: onCall(
-        { region: 'europe-west3' },
+        { region: 'europe-west3', enforceAppCheck: enforceAppCheck },
         userFCMRegistrationTokenController.onInsertOrUpdateFunctionCalled
     ),
     deleteFCMRegistrationTokenDelete: onCall(
-        { region: 'europe-west3' },
+        { region: 'europe-west3', enforceAppCheck: enforceAppCheck },
         userFCMRegistrationTokenController.onDeleteFunctionCalled
     ),
 

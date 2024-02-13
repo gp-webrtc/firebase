@@ -91,22 +91,26 @@
   "updateRemoteUserUID": false,
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  "forwardPorts": [80, 5001, 8000, 8080, 9199],
+  "forwardPorts": [80, 4000, 5001, 8080, 9099, 9199],
   "portsAttributes": {
     "80": {
       "label": "nginx",
       "onAutoForward": "notify"
     },
-    "8000": {
+    "4000": {
       "label": "Firebase Emulator UI",
+      "onAutoForward": "notify"
+    },
+    "5001": {
+      "label": "Firebase Emulator Functions",
       "onAutoForward": "notify"
     },
     "8080": {
       "label": "Firebase Emulator Firestore",
       "onAutoForward": "notify"
     },
-    "5001": {
-      "label": "Firebase Emulator Functions",
+    "9099": {
+      "label": "Firebase Emulator Auth",
       "onAutoForward": "notify"
     },
     "9199": {
