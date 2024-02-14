@@ -60,16 +60,16 @@ export class GPWUserDeviceController {
         }
     }
 
-    async onDocumentDeleted(event: FirestoreEvent<DocumentSnapshot | undefined, { userId: string; deviceId: string }>) {
-        if (event.data) {
-            const userId = event.params.userId;
+    // async onDocumentDeleted(event: FirestoreEvent<DocumentSnapshot | undefined, { userId: string; deviceId: string }>) {
+    //     if (event.data) {
+    //         const userId = event.params.userId;
 
-            const device = event.data.data() as GPWUserDevice;
+    //         const device = event.data.data() as GPWUserDevice;
 
-            userNotificationController.send(userId, {
-                type: 'onDeviceRemoved',
-                data: device,
-            });
-        }
-    }
+    //         userNotificationController.send(userId, {
+    //             type: 'onDeviceRemoved',
+    //             data: device,
+    //         });
+    //     }
+    // }
 }

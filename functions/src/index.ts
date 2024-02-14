@@ -30,7 +30,7 @@ import {
     userNotificationController,
 } from './controllers';
 import { onCall } from 'firebase-functions/v2/https';
-import { onDocumentCreated, onDocumentDeleted, onDocumentUpdated } from 'firebase-functions/v2/firestore';
+import { onDocumentCreated, onDocumentUpdated } from 'firebase-functions/v2/firestore';
 import { setGlobalOptions } from 'firebase-functions/v2/options';
 
 // Initialize firebase App
@@ -55,7 +55,6 @@ export const user = {
     // User Device documents
     onDeviceCreated: onDocumentCreated('users/{userId}/devices/{deviceId}', userDeviceController.onDocumentCreated),
     onDeviceUpdated: onDocumentUpdated('users/{userId}/devices/{deviceId}', userDeviceController.onDocumentUpdated),
-    onDeviceDeleted: onDocumentDeleted('users/{userId}/devices/{deviceId}', userDeviceController.onDocumentDeleted),
 
     // User FCM Registration token callable functions
     insertOrUpdateFCMRegistrationToken: onCall(
