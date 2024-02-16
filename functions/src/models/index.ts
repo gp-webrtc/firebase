@@ -21,6 +21,7 @@
 //
 
 export type { GPWUser } from './documents/user.model';
+export type { GPWUserCall } from './documents/user_call.model';
 export type { GPWUserDevice } from './documents/user_device.model';
 export type { GPWUserFCMRegistrationToken } from './documents/user_fcm_registration_token.model';
 export type { GPWUserNotification } from './documents/user_notification.model';

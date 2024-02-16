@@ -22,7 +22,7 @@
 
 import { GPWUserNotificationMetadata } from '../models/shared/user_notification_metadata.model';
 
-const userNotificationOnMessageReceivedMetadata: GPWUserNotificationMetadata = {
+export const userNotificationMetadata: GPWUserNotificationMetadata = {
     onMessageReceived: {
         apns: {
             headers: {
@@ -65,6 +65,12 @@ const userNotificationOnMessageReceivedMetadata: GPWUserNotificationMetadata = {
             },
         },
     },
+    call: {
+        apns: {
+            headers: {
+                'apns-push-type': 'voip',
+                'apns-topic': 'org.gpfister.webrtc.voip',
+            },
+        },
+    },
 };
-
-export const userNotificationMetadata = { ...userNotificationOnMessageReceivedMetadata };

@@ -25,7 +25,13 @@ import { Timestamp } from 'firebase-admin/firestore';
 import { Change, FirestoreEvent, QueryDocumentSnapshot } from 'firebase-functions/v2/firestore';
 import { UserRecord } from 'firebase-functions/v1/auth';
 
-import { userDeviceService, userFCMRegistrationTokenService, userNotificationService, userService } from '../services';
+import {
+    userCallService,
+    userDeviceService,
+    userFCMRegistrationTokenService,
+    userNotificationService,
+    userService,
+} from '../services';
 import { GPWUser } from '../models';
 
 export class GPWUserController {
@@ -61,6 +67,7 @@ export class GPWUserController {
     }
 
     async onAccountDeleted(user: UserRecord) {
+        await userCallService.deleteAll(user.uid);
         await userDeviceService.deleteAll(user.uid);
         await userFCMRegistrationTokenService.deleteAll(user.uid);
         await userNotificationService.deleteAll(user.uid);

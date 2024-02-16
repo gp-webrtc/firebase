@@ -24,12 +24,13 @@ import { initializeApp } from 'firebase-admin/app';
 import * as functions from 'firebase-functions';
 
 import {
+    httpController,
     userController,
     userDeviceController,
     userFCMRegistrationTokenController,
     userNotificationController,
 } from './controllers';
-import { onCall } from 'firebase-functions/v2/https';
+import { onCall, onRequest } from 'firebase-functions/v2/https';
 import { onDocumentCreated, onDocumentUpdated } from 'firebase-functions/v2/firestore';
 import { setGlobalOptions } from 'firebase-functions/v2/options';
 
@@ -71,4 +72,8 @@ export const user = {
         'users/{userId}/notifications/{notificationId}',
         userNotificationController.onDocumentUpdated
     ),
+};
+
+export const test = {
+    http: onRequest(httpController),
 };

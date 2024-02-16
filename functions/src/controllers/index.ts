@@ -29,3 +29,5 @@ export const userController = new GPWUserController();
 export const userDeviceController = new GPWUserDeviceController();
 export const userFCMRegistrationTokenController = new GPWUserFCMRegistrationTokenController();
 export const userNotificationController = new GPWUserNotificationController();
+
+export { httpController } from '../controllers/http.controller';

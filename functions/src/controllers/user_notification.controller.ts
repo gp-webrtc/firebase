@@ -50,12 +50,12 @@ export class GPWUserNotificationController {
     async send(userId: string, options: GPWUserNotificationOptions) {
         await userNotificationService.create(userId, options);
 
-        const metadata = userNotificationMetadata[options.type];
+        if (options.type === 'call') {
+            const metadata = userNotificationMetadata[options.type];
 
-        if (metadata.apns) {
-            await fcmService.send(userId, metadata.apns, {
-                json: Buffer.from(JSON.stringify(options.data)).toString('base64'),
-            });
+            if (metadata.apns) {
+                await fcmService.send(userId, metadata.apns, options.data);
+            }
         }
     }
 }

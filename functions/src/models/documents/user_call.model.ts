@@ -20,30 +20,13 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import { GPWUserDevice } from '../documents/user_device.model';
+import { Timestamp } from 'firebase-admin/firestore';
 
-type GPWUserNotificationOnDeviceAddedOptions = {
-    type: 'onDeviceAdded';
-    data: GPWUserDevice;
+export type GPWUserCall = {
+    userId: string;
+    callId: string;
+    callerId: string;
+    displayName: string;
+    creationDate: Timestamp;
+    modificationDate: Timestamp;
 };
-
-type GPWUserNotificationOnDeviceRemovedOptions = {
-    type: 'onDeviceRemoved';
-    data: GPWUserDevice;
-};
-
-type GPWUserNotificationOnMessageReceivedOptions = {
-    type: 'onMessageReceived';
-    data: { userId: string; encrypted: string };
-};
-
-type GPWUserNotificationCallOptions = {
-    type: 'call';
-    data: { callId: string; callerId: string; displayName: string };
-};
-
-export type GPWUserNotificationOptions =
-    | GPWUserNotificationOnDeviceAddedOptions
-    | GPWUserNotificationOnDeviceRemovedOptions
-    | GPWUserNotificationOnMessageReceivedOptions
-    | GPWUserNotificationCallOptions;

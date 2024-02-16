@@ -26,6 +26,6 @@
         "emul:build:import": "(cd functions && rm -rf dist && npm run build) && npm run emul:import"
     },
     "dependencies": {
-        "firebase-tools": "^13.2.1"
+        "firebase-tools": "^13.3.0"
     }
 }
