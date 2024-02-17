@@ -20,26 +20,27 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import { Timestamp } from 'firebase-admin/firestore';
-import { GPWUserSettings } from '../shared/user_settings.model';
+import { GPWCoreVersionMatrix } from '../models';
 
-type GPWUser_0 = {
-    userId: string;
-    isEncrypted: boolean;
-    settings: GPWUserSettings;
-    encrypted: string;
-    creationDate: Timestamp;
-    modificationDate: Timestamp;
+export const coreVersionMatrix: GPWCoreVersionMatrix = {
+    minimalIOSVersion: '0.1.0(1)',
+    minimalCoreModel: '0.1.0(1)',
+    model: {
+        '0.0.0(0)': {
+            upgradableFrom: '0.0.0(0)',
+            supportedIOSVersions: ['0.0.0(0)'],
+        },
+        '0.1.0(1)': {
+            upgradableFrom: '0.0.0(0)',
+            supportedIOSVersions: ['0.1.0(1)'],
+        },
+    },
+    ios: {
+        '0.0.0(0)': {
+            supportedModelVersions: ['0.0.0(0)'],
+        },
+        '0.1.0(1)': {
+            supportedModelVersions: ['0.1.0(1)'],
+        },
+    },
 };
-
-type GPSUser_1_0_0_1 = {
-    userId: string;
-    isEncrypted: boolean;
-    settings: GPWUserSettings;
-    encrypted: string;
-    creationDate: Timestamp;
-    modificationDate: Timestamp;
-    modelVersion: '0.1.0(1)';
-};
-
-export type GPWUser = GPWUser_0 | GPSUser_1_0_0_1;

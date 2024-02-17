@@ -26,7 +26,7 @@ import { Change, FirestoreEvent, QueryDocumentSnapshot } from 'firebase-function
 import { userNotificationMetadata } from '../data';
 import { GPWUserNotification, GPWUserNotificationOptions } from '../models';
 import { fcmService, userNotificationService } from '../services';
-import { logger } from 'firebase-functions/v1';
+import { logger } from 'firebase-functions/v2';
 
 export class GPWUserNotificationController {
     async onDocumentUpdated(

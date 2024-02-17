@@ -63,7 +63,7 @@ export class GPWUserController {
         const displayName = result.data[0] ?? 'Nameless Joe';
 
         // Create the user record
-        await userService.create(user.uid, displayName);
+        await userService.create(user.uid, displayName, '0.1.0(1)');
     }
 
     async onAccountDeleted(user: UserRecord) {

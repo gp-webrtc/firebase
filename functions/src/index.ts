@@ -24,6 +24,7 @@ import { initializeApp } from 'firebase-admin/app';
 import * as functions from 'firebase-functions';
 
 import {
+    coreController,
     httpController,
     userController,
     userDeviceController,
@@ -40,6 +41,10 @@ initializeApp();
 setGlobalOptions({ region: 'europe-west3' });
 
 const enforceAppCheck = !process.env.GPW_FIREBASE_EMULATOR ? true : false;
+
+export const core = {
+    updateModel: onCall({ region: 'europe-west3', enforceAppCheck: enforceAppCheck }, coreController.updateModel),
+};
 
 export const user = {
     // Auth triggers

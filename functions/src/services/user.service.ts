@@ -21,8 +21,9 @@
 //
 
 import { firestore } from 'firebase-admin';
-import { GPWUser } from '../models';
 import { Timestamp } from 'firebase-admin/firestore';
+
+import { GPWUser } from '../models';
 
 export class GPWUserService {
     async get(userId: string): Promise<GPWUser | undefined> {
@@ -30,12 +31,13 @@ export class GPWUserService {
         return (await db.collection('/users').doc(userId).get())?.data() as GPWUser;
     }
 
-    async create(userId: string, displayName: string) {
+    async create(userId: string, displayName: string, modelVersion: '0.1.0(1)') {
         const db = firestore();
         const ts = Timestamp.now();
 
         // Create the user record
         const user: GPWUser = {
+            modelVersion: modelVersion,
             userId: userId,
             isEncrypted: false,
             encrypted: Buffer.from(JSON.stringify({ displayName })).toString('base64'),

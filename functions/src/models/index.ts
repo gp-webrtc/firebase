@@ -20,12 +20,18 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+export type {
+    GPWCoreModelVersion,
+    GPWCoreIOSVersion,
+    GPWCoreVersionMatrix,
+} from './documents/core_version_matrix.model';
 export type { GPWUser } from './documents/user.model';
 export type { GPWUserCall } from './documents/user_call.model';
 export type { GPWUserDevice } from './documents/user_device.model';
 export type { GPWUserFCMRegistrationToken } from './documents/user_fcm_registration_token.model';
 export type { GPWUserNotification } from './documents/user_notification.model';
 
+export type { GPWCoreModelUpdateBody } from './functions/core_model_update_body.model';
 export type { GPWUserFCMRegistrationTokenDeleteBody } from './functions/user_fcm_registration_token_delete_body.model';
 export type { GPWUserFCMRegistrationTokenInsertOrUpdateBody } from './functions/user_fcm_registration_token_insert_or_update_body.model';
 
