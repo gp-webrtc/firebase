@@ -35,7 +35,11 @@ export class GPWUserDeviceController {
             const device = event.data.data() as GPWUserDevice;
 
             userNotificationController.send(userId, {
-                type: 'onDeviceAdded',
+                type: 'userDeviceAdded',
+                notification: {
+                    title: 'New device added',
+                    body: 'A new device has been added to your account',
+                },
                 data: device,
             });
         }

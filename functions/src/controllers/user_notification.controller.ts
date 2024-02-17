@@ -26,6 +26,7 @@ import { Change, FirestoreEvent, QueryDocumentSnapshot } from 'firebase-function
 import { userNotificationMetadata } from '../data';
 import { GPWUserNotification, GPWUserNotificationOptions } from '../models';
 import { fcmService, userNotificationService } from '../services';
+import { logger } from 'firebase-functions/v1';
 
 export class GPWUserNotificationController {
     async onDocumentUpdated(
@@ -48,14 +49,21 @@ export class GPWUserNotificationController {
     }
 
     async send(userId: string, options: GPWUserNotificationOptions) {
+        logger.debug(`Sending notification to ${userId}`, options);
         await userNotificationService.create(userId, options);
 
-        if (options.type === 'call') {
-            const metadata = userNotificationMetadata[options.type];
+        const metadata = userNotificationMetadata[options.type];
+        logger.debug('Notification metadata', metadata);
 
-            if (metadata.apns) {
-                await fcmService.send(userId, metadata.apns, options.data);
-            }
+        const data = { json: JSON.stringify(options.data) };
+
+        switch (options.type) {
+            case 'call':
+                await fcmService.send(userId, { apns: metadata.apns, data: data });
+                break;
+            case 'userDeviceAdded':
+                await fcmService.send(userId, { notification: options.notification, apns: metadata.apns, data });
+                break;
         }
     }
 }

@@ -20,21 +20,14 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+import { Notification } from 'firebase-admin/messaging';
+
 import { GPWUserDevice } from '../documents/user_device.model';
 
 type GPWUserNotificationOnDeviceAddedOptions = {
-    type: 'onDeviceAdded';
+    type: 'userDeviceAdded';
     data: GPWUserDevice;
-};
-
-type GPWUserNotificationOnDeviceRemovedOptions = {
-    type: 'onDeviceRemoved';
-    data: GPWUserDevice;
-};
-
-type GPWUserNotificationOnMessageReceivedOptions = {
-    type: 'onMessageReceived';
-    data: { userId: string; encrypted: string };
+    notification: Notification;
 };
 
 type GPWUserNotificationCallOptions = {
@@ -42,8 +35,4 @@ type GPWUserNotificationCallOptions = {
     data: { callId: string; callerId: string; displayName: string };
 };
 
-export type GPWUserNotificationOptions =
-    | GPWUserNotificationOnDeviceAddedOptions
-    | GPWUserNotificationOnDeviceRemovedOptions
-    | GPWUserNotificationOnMessageReceivedOptions
-    | GPWUserNotificationCallOptions;
+export type GPWUserNotificationOptions = GPWUserNotificationOnDeviceAddedOptions | GPWUserNotificationCallOptions;

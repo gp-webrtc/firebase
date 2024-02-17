@@ -22,9 +22,11 @@
 
 import * as uuid from 'uuid';
 import * as express from 'express';
+
+import { Timestamp } from 'firebase-admin/firestore';
+
 import { GPWUserDevice } from '../models';
 import { userService, userCallService, userNotificationService } from '../services';
-import { Timestamp } from 'firebase-admin/firestore';
 import { userNotificationController } from '.';
 
 export const httpController = express.default();
@@ -47,10 +49,10 @@ httpController.post('/users/:userId/call', async (req, res) => {
             data: { callId, callerId: '21635e00-06ca-4478-9039-05e871b4324b', displayName: 'Test device' },
         });
 
-        res.json({ callId: callId }).send(200);
+        res.json({ callId: callId }).sendStatus(200);
     }
 
-    res.json({ error: 'User not found' }).send(404);
+    res.sendStatus(404);
 });
 
 // build multiple CRUD interfaces:
@@ -71,10 +73,17 @@ httpController.post('/users/:userId/onDeviceAdded', async (req, res) => {
             modificationDate: ts,
         };
 
-        await userNotificationController.send(userId, { type: 'onDeviceAdded', data: device });
+        await userNotificationController.send(userId, {
+            type: 'userDeviceAdded',
+            data: device,
+            notification: {
+                title: 'New device added',
+                body: 'You have added devive iPhone tralala.',
+            },
+        });
 
-        res.json({ deviceId }).send(200);
+        res.json({ deviceId }).sendStatus(200);
     }
 
-    res.json({ error: 'User not found' }).send(404);
+    res.sendStatus(404);
 });

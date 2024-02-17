@@ -23,44 +23,14 @@
 import { GPWUserNotificationMetadata } from '../models/shared/user_notification_metadata.model';
 
 export const userNotificationMetadata: GPWUserNotificationMetadata = {
-    onMessageReceived: {
+    userDeviceAdded: {
         apns: {
             headers: {
                 'apns-priority': '5',
             },
             payload: {
                 aps: {
-                    category: 'MESSAGE_RECEIVED',
-                    contentAvailable: true,
-                    mutableContent: true,
-                },
-            },
-        },
-    },
-    onDeviceAdded: {
-        apns: {
-            headers: {
-                'apns-priority': '5',
-            },
-            payload: {
-                aps: {
-                    category: 'DEVICE_ADDED',
-                    contentAvailable: true,
-                    mutableContent: true,
-                },
-            },
-        },
-    },
-    onDeviceRemoved: {
-        apns: {
-            headers: {
-                'apns-priority': '5',
-            },
-            payload: {
-                aps: {
-                    category: 'DEVICE_REMOVED',
-                    contentAvailable: true,
-                    mutableContent: true,
+                    category: 'USER_DEVICE_ADDED',
                 },
             },
         },

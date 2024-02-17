@@ -68,17 +68,9 @@ export class GPWUserNotificationService {
         options: GPWUserNotificationOptions
     ): { path: string } | { callId: string; callerId: string; displayName: string } {
         switch (options.type) {
-            case 'onDeviceAdded':
+            case 'userDeviceAdded':
                 return {
                     path: `/users/${options.data.userId}/devices/${options.data.deviceId}`,
-                };
-            case 'onDeviceRemoved':
-                return {
-                    path: `/users/${options.data.userId}/devices/${options.data.deviceId}`,
-                };
-            case 'onMessageReceived':
-                return {
-                    path: '',
                 };
             case 'call':
                 return {
