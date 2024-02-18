@@ -20,80 +20,36 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import * as axios from 'axios';
-import { Timestamp } from 'firebase-admin/firestore';
 import { Change, FirestoreEvent, QueryDocumentSnapshot } from 'firebase-functions/v2/firestore';
-import { UserRecord } from 'firebase-functions/v1/auth';
+// import { logger } from 'firebase-functions/v2';
 
-import {
-    userCallService,
-    userDeviceService,
-    userFCMRegistrationTokenService,
-    userNotificationService,
-    userService,
-} from '../services';
 import { GPWUser } from '../models';
+import { userService } from '../services';
 
 export class GPWUserController {
     async onDocumentUpdated(event: FirestoreEvent<Change<QueryDocumentSnapshot> | undefined, { userId: string }>) {
-        const ts = Timestamp.now();
-
         if (event.data) {
             const userId = event.params.userId;
             const before = event.data.before.data() as GPWUser;
-            const after = event.data.before.data() as GPWUser;
-            after.modificationDate = before.modificationDate;
+            const after = event.data.after.data() as GPWUser;
 
+            // Skipped if this is related to a data update
+            if (
+                ('modelVersion' in before && 'modelVersion' in after && before.modelVersion !== after.modelVersion) ||
+                (!('modelVersion' in before) && 'modelVersion' in after) ||
+                ('modelVersion' in before && !('modelVersion' in after))
+            ) {
+                return;
+            }
+
+            // If this is a monitored change
             if (
                 before.encrypted !== after.encrypted ||
                 before.isEncrypted !== after.isEncrypted ||
                 before.settings !== after.settings
             ) {
-                after.modificationDate = ts;
                 await userService.save(userId, after);
             }
         }
     }
-
-    async onAccountCreated(user: UserRecord) {
-        // Generate a randome display name
-        const result = await axios.default.get('https://randommer.io/api/Name?nameType=fullname&quantity=1', {
-            headers: { 'X-Api-Key': process.env.RANDOMMER_IO_API_KEY },
-        });
-        const displayName = result.data[0] ?? 'Nameless Joe';
-
-        // Create the user record
-        await userService.create(user.uid, displayName, '0.1.0(1)');
-    }
-
-    async onAccountDeleted(user: UserRecord) {
-        await userCallService.deleteAll(user.uid);
-        await userDeviceService.deleteAll(user.uid);
-        await userFCMRegistrationTokenService.deleteAll(user.uid);
-        await userNotificationService.deleteAll(user.uid);
-        await userService.delete(user.uid);
-    }
-
-    // ----> Cannot be used with anynimous accounts
-    // async onBeforeAccountCreated(event: AuthBlockingEvent) {
-    //     if (event.additionalUserInfo?.providerId !== 'anonymous') {
-    //         throw new HttpsError('permission-denied', 'Only anonymous login allowed');
-    //     }
-    // }
-
-    // async onBeforeSignedIn(event: AuthBlockingEvent) {
-    //     if (event.auth) {
-    //         // Create/update user document
-    //         const user = await userService.get(event.auth.uid);
-    //         if (user) {
-    //             await userService.updateLastSignIn(event.auth.uid, event);
-    //         } else {
-    //             await userService.create(event.auth.uid);
-    //         }
-
-    //         // Create sign in history record
-    //         await userSignInHistoryRecord.create(event.auth.uid, event);
-    //     }
-    // }
-    // <---- Cannot be used with anynimous accounts
 }

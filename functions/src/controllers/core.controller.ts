@@ -30,7 +30,7 @@ import { coreVersionMatrix } from '../data';
 
 export class GPWCoreController {
     async updateModel(request: CallableRequest<GPWCoreModelUpdateBody>) {
-        if (!process.env.GPW_FIREBASE_EMULATOR && request.app == undefined) {
+        if (!process.env.GPW_FIREBASE_EMULATOR && request.app === undefined) {
             throw new HttpsError('failed-precondition', 'The function must be called from an App Check verified app.');
         }
 
@@ -39,13 +39,10 @@ export class GPWCoreController {
 
         if (body) {
             if (userId) {
-                if (userId == body.userId) {
-                    await this.updateUserModel(userId, body.toVersion);
+                if (userId === body.userId) {
+                    await updateUserModel(userId, body.toVersion);
                 } else {
-                    throw new HttpsError(
-                        'permission-denied',
-                        'You are not authorized to add or update user registration token.r'
-                    );
+                    throw new HttpsError('permission-denied', 'You are not authorized to update the user data.');
                 }
             } else {
                 throw new HttpsError('unauthenticated', 'You must be authenticated to use this function');
@@ -54,39 +51,40 @@ export class GPWCoreController {
             throw new HttpsError('invalid-argument', 'Wrong body structure');
         }
     }
+}
 
-    private async updateUserModel(userId: string, version: GPWCoreModelVersion) {
-        const targetVersion = coreVersionMatrix.model[version];
-        const user = await userService.get(userId);
-        if (user) {
-            let sourceVersion: GPWCoreModelVersion;
-            if ('modelVersion' in user) {
-                sourceVersion = user.modelVersion;
-            } else {
-                sourceVersion = '0.0.0(0)';
-            }
-            if (targetVersion.upgradableFrom <= sourceVersion) {
-                logger.info(`Upgrading user ${userId} from ${sourceVersion} to ${targetVersion}`);
-                await updateModelTo[version](userId);
-            } else {
-                await updateModelTo[targetVersion.upgradableFrom](userId);
-                await updateModelTo[version](userId);
-            }
+const updateUserModelTo: { [key in GPWCoreModelVersion]: (userId: string) => Promise<void> } = {
+    '0.0.0(0)': dummy,
+    '0.1.0(1)': updateUserModelTo1_0_0_1,
+};
+
+async function updateUserModel(userId: string, version: GPWCoreModelVersion) {
+    const targetVersion = coreVersionMatrix.model[version];
+    const user = await userService.get(userId);
+    if (user) {
+        let sourceVersion: GPWCoreModelVersion;
+        if ('modelVersion' in user) {
+            sourceVersion = user.modelVersion;
+        } else {
+            sourceVersion = '0.0.0(0)';
+        }
+        if (targetVersion.upgradableFrom <= sourceVersion) {
+            logger.info(`Upgrading user ${userId} from ${sourceVersion} to ${targetVersion}`);
+            await updateUserModelTo[version](userId);
+        } else {
+            logger.error('Should not get here', { user, sourceVersion, targetVersion });
+            // await updateModel[targetVersion.upgradableFrom](userId);
+            // await updateModelTo[version](userId);
         }
     }
 }
-
-const updateModelTo: { [key in GPWCoreModelVersion]: (userId: string) => Promise<void> } = {
-    '0.0.0(0)': dummy,
-    '0.1.0(1)': updateModelTo1_0_0_1,
-};
 
 async function dummy(userId: string) {
     logger.error(`User ${userId} called for dummy update`);
     throw Error('Dummy upgrade');
 }
 
-async function updateModelTo1_0_0_1(userId: string) {
+async function updateUserModelTo1_0_0_1(userId: string) {
     const user = await userService.get(userId);
     if (user) {
         const updatedUser: GPWUser = {

@@ -20,11 +20,12 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+import { Timestamp } from 'firebase-admin/firestore';
 import { GPWCoreVersionMatrix } from '../models';
 
 export const coreVersionMatrix: GPWCoreVersionMatrix = {
     minimalIOSVersion: '0.1.0(1)',
-    minimalCoreModel: '0.1.0(1)',
+    minimalModelVersion: '0.1.0(1)',
     model: {
         '0.0.0(0)': {
             upgradableFrom: '0.0.0(0)',
@@ -43,4 +44,6 @@ export const coreVersionMatrix: GPWCoreVersionMatrix = {
             supportedModelVersions: ['0.1.0(1)'],
         },
     },
+    creationDate: Timestamp.now(),
+    modificationDate: Timestamp.now(),
 };

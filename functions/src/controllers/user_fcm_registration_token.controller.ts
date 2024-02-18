@@ -31,7 +31,7 @@ import { userFCMRegistrationTokenService } from '../services';
 
 export class GPWUserFCMRegistrationTokenController {
     async onInsertOrUpdateFunctionCalled(request: CallableRequest<GPWUserFCMRegistrationTokenInsertOrUpdateBody>) {
-        if (!process.env.GPW_FIREBASE_EMULATOR && request.app == undefined) {
+        if (!process.env.GPW_FIREBASE_EMULATOR && request.app === undefined) {
             throw new HttpsError('failed-precondition', 'The function must be called from an App Check verified app.');
         }
 
@@ -40,7 +40,7 @@ export class GPWUserFCMRegistrationTokenController {
 
         if (body) {
             if (userId) {
-                if (userId == body.userId) {
+                if (userId === body.userId) {
                     const existingDoc = await userFCMRegistrationTokenService.get(body.userId, body.tokenId);
                     if (existingDoc) {
                         const updatedDoc: GPWUserFCMRegistrationToken = {
@@ -75,7 +75,7 @@ export class GPWUserFCMRegistrationTokenController {
     }
 
     async onDeleteFunctionCalled(request: CallableRequest<GPWUserFCMRegistrationTokenDeleteBody>) {
-        if (!process.env.GPW_FIREBASE_EMULATOR && request.app == undefined) {
+        if (!process.env.GPW_FIREBASE_EMULATOR && request.app === undefined) {
             throw new HttpsError('failed-precondition', 'The function must be called from an App Check verified app.');
         }
 
@@ -84,7 +84,7 @@ export class GPWUserFCMRegistrationTokenController {
 
         if (request) {
             if (userId) {
-                if (userId == body.userId) {
+                if (userId === body.userId) {
                     const userFCMRegistrationToken = await userFCMRegistrationTokenService.get(
                         body.userId,
                         body.tokenId

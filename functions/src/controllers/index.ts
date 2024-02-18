@@ -20,12 +20,14 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+import { GPWAuthController } from './auth.controller';
 import { GPWCoreController } from './core.controller';
 import { GPWUserController } from './user.controller';
 import { GPWUserDeviceController } from './user_device.controller';
 import { GPWUserFCMRegistrationTokenController } from './user_fcm_registration_token.controller';
 import { GPWUserNotificationController } from './user_notification.controller';
 
+export const authController = new GPWAuthController();
 export const coreController = new GPWCoreController();
 export const userController = new GPWUserController();
 export const userDeviceController = new GPWUserDeviceController();

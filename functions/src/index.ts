@@ -24,6 +24,7 @@ import { initializeApp } from 'firebase-admin/app';
 import * as functions from 'firebase-functions';
 
 import {
+    authController,
     coreController,
     httpController,
     userController,
@@ -42,19 +43,20 @@ setGlobalOptions({ region: 'europe-west3' });
 
 const enforceAppCheck = !process.env.GPW_FIREBASE_EMULATOR ? true : false;
 
+export const auth = {
+    onAccountCreated: functions
+        .runWith({ secrets: ['RANDOMMER_IO_API_KEY'] })
+        .region('europe-west3')
+        .auth.user()
+        .onCreate(authController.onAccountCreated),
+    onAccountDeleted: functions.region('europe-west3').auth.user().onDelete(authController.onAccountDeleted),
+};
+
 export const core = {
     updateModel: onCall({ region: 'europe-west3', enforceAppCheck: enforceAppCheck }, coreController.updateModel),
 };
 
 export const user = {
-    // Auth triggers
-    onAccountCreated: functions
-        .runWith({ secrets: ['RANDOMMER_IO_API_KEY'] })
-        .region('europe-west3')
-        .auth.user()
-        .onCreate(userController.onAccountCreated),
-    onAccountDeleted: functions.region('europe-west3').auth.user().onDelete(userController.onAccountDeleted),
-
     // User documents
     onUpdated: onDocumentUpdated('/users/{userId}', userController.onDocumentUpdated),
 

@@ -31,13 +31,14 @@ export class GPWUserService {
         return (await db.collection('/users').doc(userId).get())?.data() as GPWUser;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async create(userId: string, displayName: string, modelVersion: '0.1.0(1)') {
         const db = firestore();
         const ts = Timestamp.now();
 
         // Create the user record
         const user: GPWUser = {
-            modelVersion: modelVersion,
+            // modelVersion: modelVersion,
             userId: userId,
             isEncrypted: false,
             encrypted: Buffer.from(JSON.stringify({ displayName })).toString('base64'),
@@ -49,6 +50,7 @@ export class GPWUserService {
                     onDeviceRemoved: true,
                 },
             },
+            modelVersion: '0.1.0(1)',
             creationDate: ts,
             modificationDate: ts,
         };

@@ -71,6 +71,16 @@ service cloud.firestore {
         match /{document=**} {
             allow read, write: if false;
         }
+
+        // Core
+        match /core/version {
+            allow read: if true;
+            allow write: if false;
+
+            match /{document=**} {
+                allow read, write: if false;
+            }
+        }
         
         // User documents
         match /users/{userId}  {

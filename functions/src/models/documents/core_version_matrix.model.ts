@@ -20,12 +20,14 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+import { Timestamp } from 'firebase-admin/firestore';
+
 export type GPWCoreModelVersion = '0.0.0(0)' | '0.1.0(1)';
 export type GPWCoreIOSVersion = '0.0.0(0)' | '0.1.0(1)';
 
 export type GPWCoreVersionMatrix = {
     minimalIOSVersion: string;
-    minimalCoreModel: string;
+    minimalModelVersion: string;
     model: {
         [key in GPWCoreModelVersion]: {
             upgradableFrom: GPWCoreModelVersion;
@@ -35,4 +37,6 @@ export type GPWCoreVersionMatrix = {
     ios: {
         [key in GPWCoreModelVersion]: { supportedModelVersions: GPWCoreModelVersion[] };
     };
+    creationDate: Timestamp;
+    modificationDate: Timestamp;
 };
