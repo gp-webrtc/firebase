@@ -21,22 +21,29 @@
 //
 
 import { Timestamp } from 'firebase-admin/firestore';
+import { GPWCoreVersion } from '../models';
 
-export type GPWCoreModelVersion = '0.0.0(0)' | '0.1.0(1)';
-export type GPWCoreIOSVersion = '0.0.0(0)' | '0.1.0(1)';
-
-export type GPWCoreVersionMatrix = {
-    minimalIOSVersion: string;
-    minimalModelVersion: string;
+export const coreVersion: GPWCoreVersion = {
+    minimalIOSVersion: '0.1.0(1)',
+    minimalModelVersion: '0.1.0(1)',
     model: {
-        [key in GPWCoreModelVersion]: {
-            upgradableFrom: GPWCoreModelVersion;
-            supportedIOSVersions: GPWCoreIOSVersion[];
-        };
-    };
+        '0.0.0(0)': {
+            upgradableFrom: '0.0.0(0)',
+            supportedIOSVersions: ['0.0.0(0)'],
+        },
+        '0.1.0(1)': {
+            upgradableFrom: '0.0.0(0)',
+            supportedIOSVersions: ['0.1.0(1)'],
+        },
+    },
     ios: {
-        [key in GPWCoreModelVersion]: { supportedModelVersions: GPWCoreModelVersion[] };
-    };
-    creationDate: Timestamp;
-    modificationDate: Timestamp;
+        '0.0.0(0)': {
+            supportedModelVersions: ['0.0.0(0)'],
+        },
+        '0.1.0(1)': {
+            supportedModelVersions: ['0.1.0(1)'],
+        },
+    },
+    creationDate: Timestamp.now(),
+    modificationDate: Timestamp.now(),
 };

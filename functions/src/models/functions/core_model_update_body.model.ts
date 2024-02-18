@@ -20,7 +20,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import { GPWCoreModelVersion } from '../documents/core_version_matrix.model';
+import { GPWCoreModelVersion } from '../documents/core_version.model';
 
 export type GPWCoreModelUpdateBody = {
     userId: string;

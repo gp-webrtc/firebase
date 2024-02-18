@@ -26,7 +26,7 @@ import { logger } from 'firebase-functions/v2';
 
 import { GPWCoreModelUpdateBody, GPWCoreModelVersion, GPWUser } from '../models';
 import { userService } from '../services';
-import { coreVersionMatrix } from '../data';
+import { coreVersion } from '../data';
 
 export class GPWCoreController {
     async updateModel(request: CallableRequest<GPWCoreModelUpdateBody>) {
@@ -59,7 +59,7 @@ const updateUserModelTo: { [key in GPWCoreModelVersion]: (userId: string) => Pro
 };
 
 async function updateUserModel(userId: string, version: GPWCoreModelVersion) {
-    const targetVersion = coreVersionMatrix.model[version];
+    const targetVersion = coreVersion.model[version];
     const user = await userService.get(userId);
     if (user) {
         let sourceVersion: GPWCoreModelVersion;

@@ -20,11 +20,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-export type {
-    GPWCoreModelVersion,
-    GPWCoreIOSVersion,
-    GPWCoreVersionMatrix,
-} from './documents/core_version_matrix.model';
+export type { GPWCoreModelVersion, GPWCoreIOSVersion, GPWCoreVersion } from './documents/core_version.model';
 export type { GPWUser } from './documents/user.model';
 export type { GPWUserCall } from './documents/user_call.model';
 export type { GPWUserDevice } from './documents/user_device.model';

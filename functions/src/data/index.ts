@@ -20,5 +20,5 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-export { coreVersionMatrix } from './core_version_matrix.data';
+export { coreVersion } from './core_version.data';
 export { userNotificationMetadata } from './user_notification_metadata.data';
