@@ -17,13 +17,16 @@
         "webrtc"
     ],
     "scripts": {
-        "deploy": "firebase-cli deploy --non-interactive -f --only firestore,functions,storage",
+        "deploy": "npm run maintenance:set && firebase-cli deploy --non-interactive -f --only firestore,functions,storage && npm run update:core && npm run maintenance:unset",
         "emul": "firebase-cli emulators:start --only auth,firestore,functions,storage",
         "emul:build": "(cd functions && rm -rf dist && npm run build -- --watch | (cd ../ && npm run emul))",
         "emul:export": "firebase-cli emulators:start --only auth,firestore,functions,storage --export-on-exit ~/snapshots/",
         "emul:build:export": "(cd functions && rm -rf dist && npm run build) && npm run emul:export",
         "emul:import": "firebase-cli emulators:start --only auth,firestore,functions,storage --import ~/snapshots/ --export-on-exit",
-        "emul:build:import": "(cd functions && rm -rf dist && npm run build) && npm run emul:import"
+        "emul:build:import": "(cd functions && rm -rf dist && npm run build) && npm run emul:import",
+        "maintenance:set": "(cd functions && npx ts-node src/scripts/set_maintenance_mode_on.ts)",
+        "maintenance:unset": "(cd functions && npx ts-node src/scripts/set_maintenance_mode_off.ts)",
+        "update:core": "(cd functions && npx ts-node src/scripts/update_core.ts)"
     },
     "dependencies": {
         "firebase-tools": "^13.3.0"

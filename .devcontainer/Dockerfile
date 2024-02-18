@@ -35,6 +35,15 @@ RUN apt-get update && \
     apt-get autoclean -y && \
     apt-get autoremove -y
 
+# Install Google Cloud CLI
+RUN export CLOUDSDK_CORE_DISABLE_PROMPTS=1 && \
+    export CLOUDSDK_INSTALL_DIR=/opt && \
+    curl https://sdk.cloud.google.com | bash
+COPY 200-gcloud-cli /etc/gp-devenv/zshrc.d/
+RUN groupadd gcloud && usermod -aG gcloud vscode && \
+    chown -R root:gcloud /opt/google-cloud-sdk && \
+    chmod -R g+w /opt/google-cloud-sdk
+
 # Switch back to vscode user
 USER vscode
 

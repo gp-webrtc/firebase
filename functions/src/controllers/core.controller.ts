@@ -56,6 +56,7 @@ export class GPWCoreController {
 const updateUserModelTo: { [key in GPWCoreModelVersion]: (userId: string) => Promise<void> } = {
     '0.0.0(0)': dummy,
     '0.1.0(1)': updateUserModelTo1_0_0_1,
+    '0.1.0(2)': updateUserModelTo1_0_0_2,
 };
 
 async function updateUserModel(userId: string, version: GPWCoreModelVersion) {
@@ -89,6 +90,22 @@ async function updateUserModelTo1_0_0_1(userId: string) {
     if (user) {
         const updatedUser: GPWUser = {
             modelVersion: '0.1.0(1)',
+            userId: user.userId,
+            isEncrypted: user.isEncrypted,
+            encrypted: user.encrypted,
+            settings: user.settings,
+            creationDate: user.creationDate,
+            modificationDate: user.modificationDate,
+        };
+        await userService.save(userId, updatedUser);
+    }
+}
+
+async function updateUserModelTo1_0_0_2(userId: string) {
+    const user = await userService.get(userId);
+    if (user) {
+        const updatedUser: GPWUser = {
+            modelVersion: '0.1.0(2)',
             userId: user.userId,
             isEncrypted: user.isEncrypted,
             encrypted: user.encrypted,

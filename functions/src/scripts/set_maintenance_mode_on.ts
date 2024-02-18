@@ -20,34 +20,30 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import { GPWCoreVersionCommon } from '../models';
+import { credential, firestore } from 'firebase-admin';
+import { initializeApp } from 'firebase-admin/app';
+import { FieldValue } from 'firebase-admin/firestore';
 
-export const coreVersion: GPWCoreVersionCommon = {
-    minimalIOSVersion: '0.1.0(1)',
-    minimalModelVersion: '0.1.0(1)',
-    model: {
-        '0.0.0(0)': {
-            upgradableFrom: '0.0.0(0)',
-            supportedIOSVersions: ['0.0.0(0)'],
-        },
-        '0.1.0(1)': {
-            upgradableFrom: '0.0.0(0)',
-            supportedIOSVersions: ['0.1.0(1)'],
-        },
-        '0.1.0(2)': {
-            upgradableFrom: '0.0.0(0)',
-            supportedIOSVersions: ['0.1.0(2)'],
-        },
-    },
-    ios: {
-        '0.0.0(0)': {
-            supportedModelVersions: ['0.0.0(0)'],
-        },
-        '0.1.0(1)': {
-            supportedModelVersions: ['0.1.0(1)'],
-        },
-        '0.1.0(2)': {
-            supportedModelVersions: ['0.1.0(2)'],
-        },
-    },
-};
+if (process.env.GOOGLE_CLOUD_CREDENTIALS) {
+    initializeApp();
+} else {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const serviceAccount = require('../../../credentials.json');
+    initializeApp({
+        credential: credential.cert(serviceAccount),
+    });
+}
+
+console.log('Setting maintenance mode on...');
+
+async function setMaintenanceOff() {
+    const db = firestore();
+    await db.collection('/core').doc('status').update({
+        maintenanceMode: true,
+        modificationDate: FieldValue.serverTimestamp(),
+    });
+}
+
+setMaintenanceOff().then(() => {
+    console.log('Maintenance mode set');
+});

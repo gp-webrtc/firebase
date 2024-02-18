@@ -49,6 +49,15 @@ The emulator can retain data, to do so:
 
 ## Deployment
 
+Before deploying, the credentials for the admin service account must be
+generated and stored at the root of the project:
+
+```sh
+gcloud iam service-accounts keys create credentials.json
+  --key-file-type=json
+  --iam-account=firebase-adminsdk-1803z@gp-webrtc.iam.gserviceaccount.com
+```
+
 To deploy, you must run `npm run deploy`.
 
 ## Contributions
