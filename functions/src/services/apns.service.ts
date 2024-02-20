@@ -25,17 +25,38 @@ import { userNotificationRegistrationTokenService } from '.';
 import { logger } from 'firebase-functions/v1';
 
 export class GPWAPNSService {
-    async send(userId: string, tokens: { tokenId: string; token: string }[], notification: Notification) {
+    async send(
+        userId: string,
+        tokens: { tokenId: string; token: string; environment: 'development' | 'production' }[],
+        notification: Notification
+    ) {
+        const developmentToken = tokens
+            .filter((token) => token.environment === 'development')
+            .map((token) => {
+                return { tokenId: token.tokenId, token: token.token };
+            });
+        if (developmentToken.length > 0) this._send(userId, developmentToken, notification);
+
+        const productionToken = tokens
+            .filter((token) => token.environment === 'production')
+            .map((token) => {
+                return { tokenId: token.tokenId, token: token.token };
+            });
+        if (productionToken.length > 0) this._send(userId, productionToken, notification);
+    }
+
+    async _send(userId: string, tokens: { tokenId: string; token: string }[], notification: Notification) {
         logger.debug(notification);
-        if (process.env.GPW_APNS_KEY && process.env.GPW_APNS_KEY_ID && process.env.GPW_APNS_TEAM_ID) {
-            const key = Buffer.from(process.env.GPW_APNS_KEY as string, 'base64').toString();
+        if (process.env.GPW_APNS_KEY_DEV && process.env.GPW_APNS_KEY_ID_DEV && process.env.GPW_APNS_TEAM_ID) {
+            const key = Buffer.from(process.env.GPW_APNS_KEY_DEV as string, 'base64').toString();
             const apn = new Provider({
                 token: {
                     key: Buffer.from(key),
-                    keyId: process.env.GPW_APNS_KEY_ID as string,
+                    keyId: process.env.GPW_APNS_KEY_ID_DEV as string,
                     teamId: process.env.GPW_APNS_TEAM_ID as string,
                 },
-                production: process.env.GPW_FIREBASE_EMULATOR ? false : true,
+                production: false,
+                // production: process.env.GPW_FIREBASE_EMULATOR ? false : true,
             });
 
             const response = await apn.send(

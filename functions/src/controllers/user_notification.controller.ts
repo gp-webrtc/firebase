@@ -72,10 +72,11 @@ export class GPWUserNotificationController {
                     return {
                         tokenId: token.tokenId,
                         token: token.token.apnsToken.apns,
+                        environment: token.token.apnsToken.environment,
                     };
                 else return undefined;
             })
-            .flatMap((token) => (token ? [{ tokenId: token.tokenId, token: token.token }] : []));
+            .flatMap((token) => (token ? [{ ...token }] : []));
 
         const voipTokens = tokens
             .map((token) => {
@@ -83,10 +84,11 @@ export class GPWUserNotificationController {
                     return {
                         tokenId: token.tokenId,
                         token: token.token.apnsToken.voip,
+                        environment: token.token.apnsToken.environment,
                     };
                 else return undefined;
             })
-            .flatMap((token) => (token ? [{ tokenId: token.tokenId, token: token.token }] : []));
+            .flatMap((token) => (token ? [{ ...token }] : []));
 
         const fcmTokens = tokens
             .map((token) => {

@@ -20,4 +20,6 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-export type GPWUserNotificationDeviceToken = { apnsToken: { voip?: string; apns: string } } | { fcmToken: string };
+export type GPWUserNotificationDeviceToken =
+    | { apnsToken: { voip?: string; apns: string; environment: 'development' | 'production' } }
+    | { fcmToken: string };
