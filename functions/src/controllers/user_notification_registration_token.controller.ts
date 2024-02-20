@@ -23,14 +23,16 @@
 import { CallableRequest, HttpsError } from 'firebase-functions/v2/https';
 
 import {
-    GPWUserFCMRegistrationToken,
-    GPWUserFCMRegistrationTokenDeleteBody,
-    GPWUserFCMRegistrationTokenInsertOrUpdateBody,
+    GPWUserNotificationRegistrationToken,
+    GPWUserNotificationRegistrationTokenDeleteBody,
+    GPWUserNotificationRegistrationTokenInsertOrUpdateBody,
 } from '../models';
-import { userFCMRegistrationTokenService } from '../services';
+import { userNotificationRegistrationTokenService } from '../services';
 
-export class GPWUserFCMRegistrationTokenController {
-    async onInsertOrUpdateFunctionCalled(request: CallableRequest<GPWUserFCMRegistrationTokenInsertOrUpdateBody>) {
+export class GPWUserNotificationRegistrationTokenController {
+    async onInsertOrUpdateFunctionCalled(
+        request: CallableRequest<GPWUserNotificationRegistrationTokenInsertOrUpdateBody>
+    ) {
         if (!process.env.GPW_FIREBASE_EMULATOR && request.app === undefined) {
             throw new HttpsError('failed-precondition', 'The function must be called from an App Check verified app.');
         }
@@ -41,9 +43,9 @@ export class GPWUserFCMRegistrationTokenController {
         if (body) {
             if (userId) {
                 if (userId === body.userId) {
-                    const existingDoc = await userFCMRegistrationTokenService.get(body.userId, body.tokenId);
+                    const existingDoc = await userNotificationRegistrationTokenService.get(body.userId, body.tokenId);
                     if (existingDoc) {
-                        const updatedDoc: GPWUserFCMRegistrationToken = {
+                        const updatedDoc: GPWUserNotificationRegistrationToken = {
                             userId: existingDoc.userId,
                             tokenId: existingDoc.tokenId,
                             token: body.token,
@@ -51,9 +53,9 @@ export class GPWUserFCMRegistrationTokenController {
                             creationDate: existingDoc.creationDate,
                             modificationDate: existingDoc.modificationDate,
                         };
-                        await userFCMRegistrationTokenService.save(body.userId, body.tokenId, updatedDoc);
+                        await userNotificationRegistrationTokenService.save(body.userId, body.tokenId, updatedDoc);
                     } else {
-                        await userFCMRegistrationTokenService.create(
+                        await userNotificationRegistrationTokenService.create(
                             body.userId,
                             body.tokenId,
                             body.token,
@@ -74,7 +76,7 @@ export class GPWUserFCMRegistrationTokenController {
         }
     }
 
-    async onDeleteFunctionCalled(request: CallableRequest<GPWUserFCMRegistrationTokenDeleteBody>) {
+    async onDeleteFunctionCalled(request: CallableRequest<GPWUserNotificationRegistrationTokenDeleteBody>) {
         if (!process.env.GPW_FIREBASE_EMULATOR && request.app === undefined) {
             throw new HttpsError('failed-precondition', 'The function must be called from an App Check verified app.');
         }
@@ -85,12 +87,12 @@ export class GPWUserFCMRegistrationTokenController {
         if (request) {
             if (userId) {
                 if (userId === body.userId) {
-                    const userFCMRegistrationToken = await userFCMRegistrationTokenService.get(
+                    const userNotificationRegistrationToken = await userNotificationRegistrationTokenService.get(
                         body.userId,
                         body.tokenId
                     );
-                    if (userFCMRegistrationToken)
-                        await userFCMRegistrationTokenService.delete(body.userId, body.tokenId);
+                    if (userNotificationRegistrationToken)
+                        await userNotificationRegistrationTokenService.delete(body.userId, body.tokenId);
                     else throw new HttpsError('not-found', 'The user token does not exist');
                 } else throw new HttpsError('permission-denied', 'You are not authorized to delete this user token');
             } else throw new HttpsError('unauthenticated', 'You must be authenticated to use this function');

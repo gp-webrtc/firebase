@@ -26,7 +26,7 @@ import { UserRecord } from 'firebase-functions/v1/auth';
 import {
     userCallService,
     userDeviceService,
-    userFCMRegistrationTokenService,
+    userNotificationRegistrationTokenService,
     userNotificationService,
     userService,
 } from '../services';
@@ -46,7 +46,7 @@ export class GPWAuthController {
     async onAccountDeleted(user: UserRecord) {
         await userCallService.deleteAll(user.uid);
         await userDeviceService.deleteAll(user.uid);
-        await userFCMRegistrationTokenService.deleteAll(user.uid);
+        await userNotificationRegistrationTokenService.deleteAll(user.uid);
         await userNotificationService.deleteAll(user.uid);
         await userService.delete(user.uid);
     }

@@ -28,6 +28,7 @@ export type GPWUserNotification = {
     notificationId: string;
     type: GPWUserNotificationType;
     payload: { path: string } | { callId: string; callerId: string; displayName: string };
+    uuid: string;
     wasRead: boolean;
     wasReceived: boolean;
     creationDate: Timestamp;

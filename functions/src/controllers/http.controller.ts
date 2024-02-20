@@ -26,8 +26,9 @@ import * as express from 'express';
 import { Timestamp } from 'firebase-admin/firestore';
 
 import { GPWUserDevice } from '../models';
-import { userService, userCallService, userNotificationService } from '../services';
+import { userService, userCallService } from '../services';
 import { userNotificationController } from '.';
+import { logger } from 'firebase-functions/v1';
 
 export const httpController = express.default();
 
@@ -43,16 +44,22 @@ httpController.post('/users/:userId/call', async (req, res) => {
         // Create a call session
         const callId = await userCallService.create(userId, '21635e00-06ca-4478-9039-05e871b4324b', 'Test device');
 
-        // Create a notification
-        await userNotificationService.create(userId, {
+        // // Create a notification
+        // await userNotificationService.create(userId, {
+        //     type: 'call',
+        //     data: { callId, callerId: '21635e00-06ca-4478-9039-05e871b4324b', displayName: 'Test device' },
+        // });
+
+        await userNotificationController.send(userId, {
             type: 'call',
             data: { callId, callerId: '21635e00-06ca-4478-9039-05e871b4324b', displayName: 'Test device' },
         });
 
-        res.json({ callId: callId }).sendStatus(200);
+        res.json({ callId: callId });
+    } else {
+        logger.error(`User ${userId} not found`);
+        res.status(404).json({ error: 'User not found' });
     }
-
-    res.sendStatus(404);
 });
 
 // build multiple CRUD interfaces:
@@ -82,8 +89,8 @@ httpController.post('/users/:userId/onDeviceAdded', async (req, res) => {
             },
         });
 
-        res.json({ deviceId }).sendStatus(200);
+        res.sendStatus(200);
+    } else {
+        res.status(404).json({ error: 'User not found' });
     }
-
-    res.sendStatus(404);
 });

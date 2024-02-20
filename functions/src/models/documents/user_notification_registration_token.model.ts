@@ -20,7 +20,19 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-export type GPWUserFCMRegistrationTokenDeleteBody = {
+import { Timestamp } from 'firebase-admin/firestore';
+
+import { GPWUserDeviceType } from '../shared/user_user_device_type.model';
+import { GPWUserNotificationDeviceToken } from '../shared/user_notification_device_token.model';
+
+export type GPWUserNotificationRegistrationTokenCommon = {
     userId: string;
     tokenId: string;
+    deviceType: GPWUserDeviceType;
+    token: GPWUserNotificationDeviceToken;
+};
+
+export type GPWUserNotificationRegistrationToken = GPWUserNotificationRegistrationTokenCommon & {
+    creationDate: Timestamp;
+    modificationDate: Timestamp;
 };

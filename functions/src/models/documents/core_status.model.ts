@@ -20,6 +20,13 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-export { coreStatus } from './core_status.data';
-export { coreVersion } from './core_version.data';
-export { userNotificationMetadata } from './user_notification_metadata.data';
+import { Timestamp } from 'firebase-admin/firestore';
+
+export type GPWCoreStatusCommon = {
+    maintenanceMode: boolean;
+};
+
+export type GPWCoreStatus = GPWCoreStatusCommon & {
+    creationDate: Timestamp;
+    modificationDate: Timestamp;
+};

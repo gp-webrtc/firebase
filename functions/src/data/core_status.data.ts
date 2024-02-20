@@ -20,11 +20,8 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-export type GPWUserFCMRegistrationTokenDeviceType =
-    | 'iOSApp'
-    | 'androidApp'
-    | 'watchOSApp'
-    | 'safariWebApp'
-    | 'chromeWebApp'
-    | 'firefoxWebApp'
-    | 'edgeWebApp';
+import { GPWCoreStatusCommon } from '../models';
+
+export const coreStatus: GPWCoreStatusCommon = {
+    maintenanceMode: false,
+};

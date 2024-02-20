@@ -26,18 +26,23 @@ export type {
     GPWCoreVersion,
     GPWCoreVersionCommon,
 } from './documents/core_version.model';
+export type { GPWCoreStatus, GPWCoreStatusCommon } from './documents/core_status.model';
 export type { GPWUser } from './documents/user.model';
 export type { GPWUserCall } from './documents/user_call.model';
 export type { GPWUserDevice } from './documents/user_device.model';
-export type { GPWUserFCMRegistrationToken } from './documents/user_fcm_registration_token.model';
+export type {
+    GPWUserNotificationRegistrationToken,
+    GPWUserNotificationRegistrationTokenCommon,
+} from './documents/user_notification_registration_token.model';
 export type { GPWUserNotification } from './documents/user_notification.model';
 
 export type { GPWCoreModelUpdateBody } from './functions/core_model_update_body.model';
-export type { GPWUserFCMRegistrationTokenDeleteBody } from './functions/user_fcm_registration_token_delete_body.model';
-export type { GPWUserFCMRegistrationTokenInsertOrUpdateBody } from './functions/user_fcm_registration_token_insert_or_update_body.model';
+export type { GPWUserNotificationRegistrationTokenDeleteBody } from './functions/user_notification_registration_token_delete_body.model';
+export type { GPWUserNotificationRegistrationTokenInsertOrUpdateBody } from './functions/user_notification_registration_token_insert_or_update_body.model';
 
 export type { GPWSupportedLanguage } from './shared/supported_language.model';
-export type { GPWUserFCMRegistrationTokenDeviceType } from './shared/user_fcm_registration_token_device.model';
+export type { GPWUserDeviceType } from './shared/user_user_device_type.model';
+export type { GPWUserNotificationDeviceToken } from './shared/user_notification_device_token.model';
 export type { GPWUserNotificationMetadata } from './shared/user_notification_metadata.model';
 export type { GPWUserNotificationOptions } from './shared/user_notification_options.model';
 export type { GPWUserNotificationType } from './shared/user_notification_type.model';

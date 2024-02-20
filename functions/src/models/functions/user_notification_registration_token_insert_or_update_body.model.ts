@@ -20,11 +20,6 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import { GPWUserFCMRegistrationTokenDeviceType } from '../shared/user_fcm_registration_token_device.model';
+import { GPWUserNotificationRegistrationTokenCommon } from '../documents/user_notification_registration_token.model';
 
-export type GPWUserFCMRegistrationTokenInsertOrUpdateBody = {
-    userId: string;
-    tokenId: string;
-    token: string;
-    deviceType: GPWUserFCMRegistrationTokenDeviceType;
-};
+export type GPWUserNotificationRegistrationTokenInsertOrUpdateBody = GPWUserNotificationRegistrationTokenCommon;

@@ -11,7 +11,8 @@
             ".git",
             "firebase-debug.log",
             "firebase-debug.*.log",
-            "dist/scripts"
+            "dist/scripts",
+            ".env.local"
         ],
         "predeploy": [
             "if [ -d \"$RESOURCE_DIR\"/dist ]; then rm -rf \"$RESOURCE_DIR\"/dist; fi",

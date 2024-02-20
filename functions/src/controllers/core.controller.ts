@@ -20,15 +20,49 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+import { firestore } from 'firebase-admin';
 import { HttpsError } from 'firebase-functions/v1/auth';
 import { CallableRequest } from 'firebase-functions/v2/https';
 import { logger } from 'firebase-functions/v2';
 
 import { GPWCoreModelUpdateBody, GPWCoreModelVersion, GPWUser } from '../models';
 import { userService } from '../services';
-import { coreVersion } from '../data';
+import { coreStatus, coreVersion } from '../data';
+import { Timestamp } from 'firebase-admin/firestore';
 
 export class GPWCoreController {
+    async initEmulator(request: CallableRequest<void>) {
+        if (!process.env.GPW_FIREBASE_EMULATOR && request.app === undefined) {
+            throw new HttpsError('failed-precondition', 'The function must be called from an App Check verified app.');
+        }
+        if (process.env.GPW_FIREBASE_EMULATOR) {
+            const ts = Timestamp.now();
+            const db = firestore();
+            const status = await db.collection('/core').doc('status').get();
+            if (!status.exists) {
+                await db
+                    .collection('/core')
+                    .doc('status')
+                    .set({
+                        ...coreStatus,
+                        creationDate: ts,
+                        modificationDate: ts,
+                    });
+            }
+            const version = await db.collection('/core').doc('version').get();
+            if (!version.exists) {
+                await db
+                    .collection('/core')
+                    .doc('version')
+                    .set({
+                        ...coreVersion,
+                        creationDate: ts,
+                        modificationDate: ts,
+                    });
+            }
+        }
+    }
+
     async updateModel(request: CallableRequest<GPWCoreModelUpdateBody>) {
         if (!process.env.GPW_FIREBASE_EMULATOR && request.app === undefined) {
             throw new HttpsError('failed-precondition', 'The function must be called from an App Check verified app.');

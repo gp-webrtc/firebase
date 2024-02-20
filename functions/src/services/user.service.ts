@@ -45,9 +45,7 @@ export class GPWUserService {
             settings: {
                 notifications: {
                     isEnabled: true,
-                    onMessageReceived: true,
                     onDeviceAdded: true,
-                    onDeviceRemoved: true,
                 },
             },
             modelVersion: '0.1.0(1)',

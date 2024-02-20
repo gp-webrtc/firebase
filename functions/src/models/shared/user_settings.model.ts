@@ -23,8 +23,6 @@
 export type GPWUserSettings = {
     notifications: {
         isEnabled: boolean;
-        onMessageReceived: boolean;
         onDeviceAdded: boolean;
-        onDeviceRemoved: boolean;
     };
 };

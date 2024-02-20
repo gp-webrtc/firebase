@@ -20,6 +20,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+import * as UUID from 'uuid';
 import { firestore } from 'firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
 import { GPWUserCall } from '../models';
@@ -34,7 +35,7 @@ export class GPWUserCallService {
         const db = firestore();
         const ts = Timestamp.now();
 
-        const callId = db.collection(`/users/${userId}/calls`).doc().id;
+        const callId = UUID.v4();
 
         // Create the user record
         const call: GPWUserCall = {

@@ -25,8 +25,13 @@ import { Change, FirestoreEvent, QueryDocumentSnapshot } from 'firebase-function
 
 import { userNotificationMetadata } from '../data';
 import { GPWUserNotification, GPWUserNotificationOptions } from '../models';
-import { fcmService, userNotificationService } from '../services';
-import { logger } from 'firebase-functions/v2';
+import {
+    apnsService,
+    fcmService,
+    userNotificationRegistrationTokenService,
+    userNotificationService,
+} from '../services';
+import { Notification } from '@parse/node-apn';
 
 export class GPWUserNotificationController {
     async onDocumentUpdated(
@@ -49,20 +54,96 @@ export class GPWUserNotificationController {
     }
 
     async send(userId: string, options: GPWUserNotificationOptions) {
-        logger.debug(`Sending notification to ${userId}`, options);
-        await userNotificationService.create(userId, options);
+        const { uuid } = await userNotificationService.create(userId, options);
 
         const metadata = userNotificationMetadata[options.type];
-        logger.debug('Notification metadata', metadata);
 
         const data = { json: JSON.stringify(options.data) };
 
+        const tokens = await userNotificationRegistrationTokenService.getAll(userId);
+
+        if (tokens.length === 0) {
+            return;
+        }
+
+        const apnsTokens = tokens
+            .map((token) => {
+                if ('apnsToken' in token.token)
+                    return {
+                        tokenId: token.tokenId,
+                        token: token.token.apnsToken.apns,
+                    };
+                else return undefined;
+            })
+            .flatMap((token) => (token ? [{ tokenId: token.tokenId, token: token.token }] : []));
+
+        const voipTokens = tokens
+            .map((token) => {
+                if ('apnsToken' in token.token && token.token.apnsToken.voip)
+                    return {
+                        tokenId: token.tokenId,
+                        token: token.token.apnsToken.voip,
+                    };
+                else return undefined;
+            })
+            .flatMap((token) => (token ? [{ tokenId: token.tokenId, token: token.token }] : []));
+
+        const fcmTokens = tokens
+            .map((token) => {
+                if ('fcmToken' in token.token)
+                    return {
+                        tokenId: token.tokenId,
+                        token: token.token.fcmToken,
+                    };
+                else return undefined;
+            })
+            .flatMap((token) => (token ? [{ tokenId: token.tokenId, token: token.token }] : []));
+
         switch (options.type) {
             case 'call':
-                await fcmService.send(userId, { apns: metadata.apns, data: data });
+                if (metadata.apns && metadata.apns.pushType === 'voip' && voipTokens.length > 0) {
+                    const notification = new Notification();
+                    notification.id = uuid;
+                    notification.expiry = Math.floor(Date.now() / 1000) + 30; // 30 seconds
+                    notification.topic = metadata.apns.topic;
+                    notification.pushType = 'voip';
+                    notification.priority = metadata.apns.priority;
+                    notification.payload = options.data;
+                    await apnsService.send(userId, voipTokens, notification);
+                }
+                if (metadata.fcm && fcmTokens.length > 0) {
+                    await fcmService.send(userId, fcmTokens, {
+                        ...metadata.fcm,
+                        data,
+                    });
+                }
                 break;
             case 'userDeviceAdded':
-                await fcmService.send(userId, { notification: options.notification, apns: metadata.apns, data });
+                if (metadata.apns && metadata.apns.pushType === 'alert' && apnsTokens.length > 0) {
+                    const notification = new Notification();
+                    notification.id = uuid;
+                    notification.expiry = Math.floor(Date.now() / 1000) + 3600 * 24 * 7; // 7 days
+                    notification.topic = metadata.apns.topic;
+                    notification.priority = metadata.apns.priority;
+                    notification.collapseId = options.data.deviceId;
+                    notification.aps.category = metadata.apns.category;
+                    notification.aps.alert = {
+                        title: 'New device added',
+                        body: 'A new device has been added',
+                    };
+                    notification.payload = {
+                        aps: { category: metadata.apns.category },
+                        ...options.data,
+                    };
+                    await apnsService.send(userId, apnsTokens, notification);
+                }
+                if (metadata.fcm && fcmTokens.length > 0) {
+                    await fcmService.send(userId, fcmTokens, {
+                        notification: options.notification,
+                        ...metadata.fcm,
+                        data,
+                    });
+                }
                 break;
         }
     }

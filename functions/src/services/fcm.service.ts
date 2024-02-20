@@ -23,32 +23,12 @@
 import { messaging } from 'firebase-admin';
 import { BaseMessage, MulticastMessage } from 'firebase-admin/messaging';
 
-import { userFCMRegistrationTokenService } from '.';
+import { userNotificationRegistrationTokenService } from '.';
+import { logger } from 'firebase-functions/v1';
 
 export class GPWFCMService {
-    async send(userId: string, baseMessage: BaseMessage) {
+    async send(userId: string, tokens: { tokenId: string; token: string }[], baseMessage: BaseMessage) {
         const fcm = messaging();
-        const tokens = await userFCMRegistrationTokenService.getAll(userId);
-
-        // for (const token of tokens) {
-        //     const message: Message = {
-        //         token: token.token,
-        //         ...baseMessage,
-        //     };
-
-        //     try {
-        //         await fcm.send(message);
-        //     } catch (error) {
-        //         if (
-        //             error instanceof FirebaseMessagingException &&
-        //             error.code === 'messaging/registration-token-not-registered'
-        //         ) {
-        //             await userFCMRegistrationTokenService.delete(userId, token.tokenId);
-        //         } else {
-        //             throw error;
-        //         }
-        //     }
-        // }
 
         const message: MulticastMessage = {
             tokens: tokens.map((token) => token.token),
@@ -56,6 +36,8 @@ export class GPWFCMService {
         };
 
         const responses = await fcm.sendEachForMulticast(message);
+
+        logger.debug('Response from FCM', responses);
 
         let i = 0;
         for (const response of responses.responses) {
@@ -65,7 +47,8 @@ export class GPWFCMService {
                     response.error.code === 'messaging/invalid-argument')
             ) {
                 const tokenId = tokens[i].tokenId;
-                await userFCMRegistrationTokenService.delete(userId, tokenId);
+                await userNotificationRegistrationTokenService.delete(userId, tokenId);
+                logger.warn(`User notification registration token ${tokenId} deleted`);
             }
             i++;
         }

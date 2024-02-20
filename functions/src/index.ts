@@ -29,7 +29,7 @@ import {
     httpController,
     userController,
     userDeviceController,
-    userFCMRegistrationTokenController,
+    userNotificationRegistrationTokenController,
     userNotificationController,
 } from './controllers';
 import { onCall, onRequest } from 'firebase-functions/v2/https';
@@ -53,6 +53,7 @@ export const auth = {
 };
 
 export const core = {
+    initEmulator: onCall({ region: 'europe-west3', enforceAppCheck: enforceAppCheck }, coreController.initEmulator),
     updateModel: onCall({ region: 'europe-west3', enforceAppCheck: enforceAppCheck }, coreController.updateModel),
 };
 
@@ -65,13 +66,13 @@ export const user = {
     onDeviceUpdated: onDocumentUpdated('users/{userId}/devices/{deviceId}', userDeviceController.onDocumentUpdated),
 
     // User FCM Registration token callable functions
-    insertOrUpdateFCMRegistrationToken: onCall(
+    insertOrUpdateNotificationRegistrationToken: onCall(
         { region: 'europe-west3', enforceAppCheck: enforceAppCheck },
-        userFCMRegistrationTokenController.onInsertOrUpdateFunctionCalled
+        userNotificationRegistrationTokenController.onInsertOrUpdateFunctionCalled
     ),
-    deleteFCMRegistrationTokenDelete: onCall(
+    deleteNotificationRegistrationTokenDelete: onCall(
         { region: 'europe-west3', enforceAppCheck: enforceAppCheck },
-        userFCMRegistrationTokenController.onDeleteFunctionCalled
+        userNotificationRegistrationTokenController.onDeleteFunctionCalled
     ),
 
     // User notification documents
@@ -82,5 +83,5 @@ export const user = {
 };
 
 export const test = {
-    http: onRequest(httpController),
+    http: onRequest({ secrets: ['GPW_APNS_KEY', 'GPW_APNS_KEY_ID', 'GPW_APNS_TEAM_ID'] }, httpController),
 };

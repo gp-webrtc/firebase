@@ -23,55 +23,66 @@
 import { firestore } from 'firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
 
-import { GPWUserFCMRegistrationTokenDeviceType, GPWUserFCMRegistrationToken } from '../models';
+import { GPWUserDeviceType, GPWUserNotificationDeviceToken, GPWUserNotificationRegistrationToken } from '../models';
 
-export class GPWUserFCMRegistrationTokenService {
-    async get(userId: string, tokenId: string): Promise<GPWUserFCMRegistrationToken | undefined> {
+export class GPWUserNotificationRegistrationTokenService {
+    async get(userId: string, tokenId: string): Promise<GPWUserNotificationRegistrationToken | undefined> {
         const db = firestore();
         return (
-            await db.collection(`/users/${userId}/fcmRegistrationTokens`).doc(tokenId).get()
-        ).data() as GPWUserFCMRegistrationToken;
+            await db.collection(`/users/${userId}/notificationRegistrationTokens`).doc(tokenId).get()
+        ).data() as GPWUserNotificationRegistrationToken;
     }
 
-    async getAll(userId: string): Promise<GPWUserFCMRegistrationToken[]> {
+    async getAll(userId: string): Promise<GPWUserNotificationRegistrationToken[]> {
         const db = firestore();
-        const query = await db.collection(`/users/${userId}/fcmRegistrationTokens`).get();
-        return query.docs.map((doc) => doc.data() as GPWUserFCMRegistrationToken);
+        const query = await db.collection(`/users/${userId}/notificationRegistrationTokens`).get();
+        return query.docs.map((doc) => doc.data() as GPWUserNotificationRegistrationToken);
     }
 
-    async create(userId: string, tokenId: string, token: string, deviceType: GPWUserFCMRegistrationTokenDeviceType) {
+    async create(
+        userId: string,
+        tokenId: string,
+        token: GPWUserNotificationDeviceToken,
+        deviceType: GPWUserDeviceType
+    ) {
         const db = firestore();
         const ts = Timestamp.now();
 
-        const fcmRegistrationToken: GPWUserFCMRegistrationToken = {
-            userId: userId,
-            tokenId: tokenId,
+        const NotificationRegistrationToken: GPWUserNotificationRegistrationToken = {
+            userId,
+            tokenId,
             token,
             deviceType,
             modificationDate: ts,
             creationDate: ts,
         };
 
-        await db.collection(`/users/${userId}/fcmRegistrationTokens`).doc(tokenId).set(fcmRegistrationToken);
+        await db
+            .collection(`/users/${userId}/notificationRegistrationTokens`)
+            .doc(tokenId)
+            .set(NotificationRegistrationToken);
     }
 
-    async save(userId: string, tokenId: string, fcmRegistrationToken: GPWUserFCMRegistrationToken) {
+    async save(userId: string, tokenId: string, NotificationRegistrationToken: GPWUserNotificationRegistrationToken) {
         const ts = Timestamp.now();
         const db = firestore();
 
-        fcmRegistrationToken.modificationDate = ts;
+        NotificationRegistrationToken.modificationDate = ts;
 
-        await db.collection(`/users/${userId}/fcmRegistrationTokens`).doc(tokenId).update(fcmRegistrationToken);
+        await db
+            .collection(`/users/${userId}/notificationRegistrationTokens`)
+            .doc(tokenId)
+            .update(NotificationRegistrationToken);
     }
 
     async delete(userId: string, tokenId: string) {
         const db = firestore();
-        await db.collection(`/users/${userId}/fcmRegistrationTokens`).doc(tokenId).delete();
+        await db.collection(`/users/${userId}/notificationRegistrationTokens`).doc(tokenId).delete();
     }
 
     async deleteAll(userId: string) {
         const db = firestore();
-        const docs = await db.collection(`/users/${userId}/fcmRegistrationTokens`).listDocuments();
+        const docs = await db.collection(`/users/${userId}/notificationRegistrationTokens`).listDocuments();
         for (const doc of docs) {
             await doc.delete();
         }

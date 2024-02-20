@@ -25,22 +25,17 @@ import { GPWUserNotificationMetadata } from '../models/shared/user_notification_
 export const userNotificationMetadata: GPWUserNotificationMetadata = {
     userDeviceAdded: {
         apns: {
-            headers: {
-                'apns-priority': '5',
-            },
-            payload: {
-                aps: {
-                    category: 'USER_DEVICE_ADDED',
-                },
-            },
+            pushType: 'alert',
+            priority: 5,
+            topic: 'org.gpfister.republik',
+            category: 'USER_DEVICE_ADDED',
         },
     },
     call: {
         apns: {
-            headers: {
-                'apns-push-type': 'voip',
-                'apns-topic': 'org.gpfister.webrtc.voip',
-            },
+            pushType: 'voip',
+            priority: 10,
+            topic: 'org.gpfister.republik.voip',
         },
     },
 };

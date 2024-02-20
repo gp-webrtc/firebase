@@ -20,14 +20,39 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import { AndroidConfig, ApnsConfig, FcmOptions, WebpushConfig } from 'firebase-admin/messaging';
+import { AndroidConfig, FcmOptions, WebpushConfig } from 'firebase-admin/messaging';
 import { GPWUserNotificationType } from './user_notification_type.model';
+
+type GPWUserNotificationVoIPMetadata = {
+    pushType: 'voip';
+    priority: 10;
+    topic: string;
+};
+
+type GPWUserNotificationAlertMetadata = {
+    pushType: 'alert';
+    topic: string;
+    priority: 5 | 10;
+    category: string;
+};
+
+type GPWUserNotificationBackgroundMetadata = {
+    pushType: 'background';
+    topic: string;
+    priority: 1 | 5 | 10;
+    category: string;
+};
 
 export type GPWUserNotificationMetadata = {
     [key in GPWUserNotificationType]: {
-        android?: AndroidConfig;
-        webpush?: WebpushConfig;
-        apns?: ApnsConfig;
-        fcmOptions?: FcmOptions;
+        fcm?: {
+            android?: AndroidConfig;
+            webpush?: WebpushConfig;
+            fcmOptions?: FcmOptions;
+        };
+        apns?:
+            | GPWUserNotificationVoIPMetadata
+            | GPWUserNotificationAlertMetadata
+            | GPWUserNotificationBackgroundMetadata;
     };
 };

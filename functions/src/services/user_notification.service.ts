@@ -20,6 +20,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+import * as UUID from 'uuid';
 import { firestore } from 'firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
 
@@ -28,23 +29,29 @@ import { GPWUserNotification, GPWUserNotificationOptions } from '../models';
 export class GPWUserNotificationService {
     static default = new GPWUserNotificationService();
 
-    async create(userId: string, options: GPWUserNotificationOptions) {
+    async create(
+        userId: string,
+        options: GPWUserNotificationOptions
+    ): Promise<{ notificationId: string; uuid: string }> {
         const db = firestore();
         const ts = Timestamp.now();
 
         const notificationId = db.collection(`/users/${userId}/notifications`).doc().id;
+        const uuid = UUID.v4();
 
         const notification: GPWUserNotification = {
             userId,
             notificationId,
             type: options.type,
             payload: this.documentData(options),
+            uuid,
             wasRead: false,
             wasReceived: false,
             creationDate: ts,
             modificationDate: ts,
         };
         await db.collection(`/users/${userId}/notifications`).doc(notificationId).set(notification);
+        return { notificationId, uuid };
     }
 
     async save(userId: string, notificationId: string, notification: GPWUserNotification) {

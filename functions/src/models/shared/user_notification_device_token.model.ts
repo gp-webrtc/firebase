@@ -20,15 +20,4 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import { Timestamp } from 'firebase-admin/firestore';
-
-import { GPWUserFCMRegistrationTokenDeviceType } from '../shared/user_fcm_registration_token_device.model';
-
-export type GPWUserFCMRegistrationToken = {
-    userId: string;
-    tokenId: string;
-    token: string;
-    deviceType: GPWUserFCMRegistrationTokenDeviceType;
-    creationDate: Timestamp;
-    modificationDate: Timestamp;
-};
+export type GPWUserNotificationDeviceToken = { apnsToken: { voip?: string; apns: string } } | { fcmToken: string };
