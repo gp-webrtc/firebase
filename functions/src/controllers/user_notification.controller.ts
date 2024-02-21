@@ -106,12 +106,37 @@ export class GPWUserNotificationController {
                 if (metadata.apns && metadata.apns.pushType === 'voip' && voipTokens.length > 0) {
                     const notification = new Notification();
                     notification.id = uuid;
-                    notification.expiry = Math.floor(Date.now() / 1000) + 30; // 30 seconds
+                    notification.expiry = 0; // 30 seconds
                     notification.topic = metadata.apns.topic;
                     notification.pushType = 'voip';
                     notification.priority = metadata.apns.priority;
+                    notification.mutableContent = true;
                     notification.payload = options.data;
                     await apnsService.send(userId, voipTokens, notification);
+                }
+                if (metadata.fcm && fcmTokens.length > 0) {
+                    await fcmService.send(userId, fcmTokens, {
+                        ...metadata.fcm,
+                        data,
+                    });
+                }
+                break;
+            case 'userCallReceived':
+                if (metadata.apns && metadata.apns.pushType === 'alert' && apnsTokens.length > 0) {
+                    const notification = new Notification();
+                    notification.id = uuid;
+                    notification.pushType = 'alert';
+                    notification.expiry = Math.floor(Date.now() / 1000) + 3600 * 24 * 7; // 7 days
+                    notification.topic = metadata.apns.topic;
+                    notification.priority = metadata.apns.priority;
+                    notification.collapseId = options.data.callId;
+                    notification.mutableContent = true;
+                    notification.aps.alert = {
+                        title: 'Incoming call',
+                        body: 'End to end encrypted call',
+                    };
+                    notification.aps.category = metadata.apns.category;
+                    (notification.payload = options.data), await apnsService.send(userId, apnsTokens, notification);
                 }
                 if (metadata.fcm && fcmTokens.length > 0) {
                     await fcmService.send(userId, fcmTokens, {
@@ -124,19 +149,18 @@ export class GPWUserNotificationController {
                 if (metadata.apns && metadata.apns.pushType === 'alert' && apnsTokens.length > 0) {
                     const notification = new Notification();
                     notification.id = uuid;
+                    notification.pushType = 'alert';
                     notification.expiry = Math.floor(Date.now() / 1000) + 3600 * 24 * 7; // 7 days
                     notification.topic = metadata.apns.topic;
                     notification.priority = metadata.apns.priority;
                     notification.collapseId = options.data.deviceId;
+                    notification.mutableContent = true;
                     notification.aps.category = metadata.apns.category;
                     notification.aps.alert = {
                         title: 'New device added',
                         body: 'A new device has been added',
                     };
-                    notification.payload = {
-                        aps: { category: metadata.apns.category },
-                        ...options.data,
-                    };
+                    notification.payload = options.data;
                     await apnsService.send(userId, apnsTokens, notification);
                 }
                 if (metadata.fcm && fcmTokens.length > 0) {

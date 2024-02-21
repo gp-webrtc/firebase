@@ -23,6 +23,14 @@
 import { GPWUserNotificationMetadata } from '../models/shared/user_notification_metadata.model';
 
 export const userNotificationMetadata: GPWUserNotificationMetadata = {
+    userCallReceived: {
+        apns: {
+            pushType: 'alert',
+            priority: 10,
+            topic: 'org.gpfister.republik',
+            category: 'USER_CALL_RECEIVED',
+        },
+    },
     userDeviceAdded: {
         apns: {
             pushType: 'alert',

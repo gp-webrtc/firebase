@@ -44,12 +44,6 @@ httpController.post('/users/:userId/call', async (req, res) => {
         // Create a call session
         const callId = await userCallService.create(userId, '21635e00-06ca-4478-9039-05e871b4324b', 'Test device');
 
-        // // Create a notification
-        // await userNotificationService.create(userId, {
-        //     type: 'call',
-        //     data: { callId, callerId: '21635e00-06ca-4478-9039-05e871b4324b', displayName: 'Test device' },
-        // });
-
         await userNotificationController.send(userId, {
             type: 'call',
             data: { callId, callerId: '21635e00-06ca-4478-9039-05e871b4324b', displayName: 'Test device' },
@@ -63,7 +57,31 @@ httpController.post('/users/:userId/call', async (req, res) => {
 });
 
 // build multiple CRUD interfaces:
-httpController.post('/users/:userId/onDeviceAdded', async (req, res) => {
+httpController.post('/users/:userId/userCallReceived', async (req, res) => {
+    const userId = req.params.userId;
+    // const userNotification = new GPWUserNotificationService();
+    // const userCall = new GPWUserCallService();
+
+    const user = await userService.get(userId);
+
+    if (user) {
+        // Create a call session
+        const callId = await userCallService.create(userId, '21635e00-06ca-4478-9039-05e871b4324b', 'Test device');
+
+        await userNotificationController.send(userId, {
+            type: 'userCallReceived',
+            data: { callId, callerId: '21635e00-06ca-4478-9039-05e871b4324b', displayName: 'Test device' },
+        });
+
+        res.json({ callId: callId });
+    } else {
+        logger.error(`User ${userId} not found`);
+        res.status(404).json({ error: 'User not found' });
+    }
+});
+
+// build multiple CRUD interfaces:
+httpController.post('/users/:userId/userDeviceAdded', async (req, res) => {
     const ts = Timestamp.now();
     const userId = req.params.userId;
     const deviceId = uuid.v4();
