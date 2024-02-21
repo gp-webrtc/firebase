@@ -42,14 +42,14 @@ type GPSUser_1_0_0_1 = {
     modelVersion: '0.1.0(1)';
 };
 
-type GPSUser_1_0_0_2 = {
-    userId: string;
-    isEncrypted: boolean;
-    settings: GPWUserSettings;
-    encrypted: string;
-    creationDate: Timestamp;
-    modificationDate: Timestamp;
-    modelVersion: '0.1.0(2)';
-};
+// type GPSUser_1_0_0_2 = {
+//     userId: string;
+//     isEncrypted: boolean;
+//     settings: GPWUserSettings;
+//     encrypted: string;
+//     creationDate: Timestamp;
+//     modificationDate: Timestamp;
+//     modelVersion: '0.1.0(2)';
+// };
 
-export type GPWUser = GPWUser_0 | GPSUser_1_0_0_1 | GPSUser_1_0_0_2;
+export type GPWUser = GPWUser_0 | GPSUser_1_0_0_1; /* | GPSUser_1_0_0_2 */

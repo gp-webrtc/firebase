@@ -22,7 +22,7 @@
 
 import { Timestamp } from 'firebase-admin/firestore';
 
-export type GPWCoreModelVersion = '0.0.0(0)' | '0.1.0(1)' | '0.1.0(2)';
+export type GPWCoreModelVersion = '0.0.0(0)' | '0.1.0(1)';
 export type GPWCoreIOSVersion = '0.0.0(0)' | '0.1.0(1)' | '0.1.0(2)';
 
 export type GPWCoreVersionCommon = {
@@ -35,7 +35,7 @@ export type GPWCoreVersionCommon = {
         };
     };
     ios: {
-        [key in GPWCoreModelVersion]: { supportedModelVersions: GPWCoreModelVersion[] };
+        [key in GPWCoreIOSVersion]: { supportedModelVersions: GPWCoreModelVersion[] };
     };
 };
 
