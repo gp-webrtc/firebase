@@ -1,0 +1,128 @@
+//
+// gp-webrtc-firebase
+// Copyright (c) 2024, Greg PFISTER. MIT License.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of 
+// this software and associated documentation files (the “Software”), to deal in 
+// the Software without restriction, including without limitation the rights to 
+// use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of 
+// the Software, and to permit persons to whom the Software is furnished to do so, 
+// subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all 
+// copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS 
+// FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR 
+// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER 
+// IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+rules_version = '2';
+
+service cloud.firestore {
+    match /databases/{database}/documents {
+
+        // Does the logged-in user match the requested userId?
+        function isUser(userId) {
+            return request.auth.uid == userId;
+        }
+
+        // Verifies that the user creation is valid
+        function isValidUserUpdate() {
+            return isValidUserEncryptedDataUpdate() || isValidUserSetingsUpdate();
+        }
+
+        function isValidUserEncryptedDataUpdate() {
+            return request.resource.data.userId == request.auth.uid &&
+                   request.resource.data.diff(resource.data).affectedKeys().hasOnly(['encrypted']) &&
+                   request.resource.data.encrypted is string;
+        }
+
+        function isValidUserDeviceCreation(deviceId) {
+            return request.resource.data.userId == request.auth.uid &&
+                   request.resource.data.deviceId == deviceId &&
+                   request.resource.data.keys().hasOnly(['userId', 'deviceId', 'encrypted', 'isEncrypted', 'creationDate', 'modificationDate']) &&
+                   request.resource.data.isEncrypted is bool &&
+                   request.resource.data.encrypted is string;
+        }
+
+        function isValidUserSetingsUpdate() {
+            return request.resource.data.userId == request.auth.uid &&
+                   request.resource.data.diff(resource.data).affectedKeys().hasOnly(['settings']) &&
+                   request.resource.data.settings.notifications.isEnabled is bool &&
+                   request.resource.data.settings.notifications.onMessageReceived is bool &&
+                   request.resource.data.settings.notifications.onDeviceAdded is bool &&
+                   request.resource.data.settings.notifications.onDeviceRemoved is bool;
+        }
+
+        function isValidUserNotificationUpdate() {
+            return request.resource.data.userId == request.auth.uid &&
+                   (    ( request.resource.data.diff(resource.data).affectedKeys().hasOnly(['wasRead']) &&
+                          request.resource.data.isUnread == true ) || 
+                        ( request.resource.data.diff(resource.data).affectedKeys().hasOnly(['wasReceived']) &&
+                          request.resource.data.isUnread == true ) 
+                   );
+        }
+
+        // For all documents
+        match /{document=**} {
+            allow read, write: if false;
+        }
+
+        // Core
+        match /core/status {
+            allow read: if true;
+            allow write: if false;
+
+            match /{document=**} {
+                allow read, write: if false;
+            }
+        }
+
+        // Core
+        match /core/version {
+            allow read: if true;
+            allow write: if false;
+
+            match /{document=**} {
+                allow read, write: if false;
+            }
+        }
+        
+        // User documents
+        match /users/{userId}  {
+            allow read: if isUser(userId);
+            allow create, delete: if false;
+            allow update: if (isUser(userId) && isValidUserUpdate());
+
+            // User devices documents
+            match /devices/{deviceId}  {
+                allow read, delete: if isUser(userId);
+                allow create: if isUser(userId) && isValidUserDeviceCreation(deviceId);
+                allow update: if false;
+            }
+
+            // User notifications dociments
+            match /notifications/{notificationId} {
+                allow read, delete: if isUser(userId);
+                allow update: if isUser(userId) && isValidUserNotificationUpdate();
+                allow create: if false;
+            }
+
+            // User notification registration token documents
+            match /notificationRegistrationTokens/{tokenId}  {
+                allow read: if isUser(userId);
+                allow write: if false;
+            }
+
+            // User notification registration token documents
+            match /notificationTokens/{tokenId}  {
+                allow read: if isUser(userId);
+                allow write: if false;
+            }
+        }
+    }
+}
