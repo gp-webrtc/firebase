@@ -106,11 +106,11 @@ export class GPWUserNotificationController {
                 if (metadata.apns && metadata.apns.pushType === 'voip' && voipTokens.length > 0) {
                     const notification = new Notification();
                     notification.id = uuid;
-                    notification.expiry = 0; // 30 seconds
+                    notification.pushType = metadata.apns.pushType;
                     notification.topic = metadata.apns.topic;
-                    notification.pushType = 'voip';
+                    notification.expiry = Math.floor(Date.now() / 1000) + metadata.apns.expiration;
                     notification.priority = metadata.apns.priority;
-                    notification.mutableContent = true;
+                    // notification.mutableContent = true;
                     notification.payload = options.data;
                     await apnsService.send(userId, voipTokens, notification);
                 }
@@ -125,9 +125,9 @@ export class GPWUserNotificationController {
                 if (metadata.apns && metadata.apns.pushType === 'alert' && apnsTokens.length > 0) {
                     const notification = new Notification();
                     notification.id = uuid;
-                    notification.pushType = 'alert';
-                    notification.expiry = Math.floor(Date.now() / 1000) + 3600 * 24 * 7; // 7 days
+                    notification.pushType = metadata.apns.pushType;
                     notification.topic = metadata.apns.topic;
+                    notification.expiry = Math.floor(Date.now() / 1000) + metadata.apns.expiration;
                     notification.priority = metadata.apns.priority;
                     notification.collapseId = options.data.callId;
                     notification.mutableContent = true;
@@ -149,9 +149,9 @@ export class GPWUserNotificationController {
                 if (metadata.apns && metadata.apns.pushType === 'alert' && apnsTokens.length > 0) {
                     const notification = new Notification();
                     notification.id = uuid;
-                    notification.pushType = 'alert';
-                    notification.expiry = Math.floor(Date.now() / 1000) + 3600 * 24 * 7; // 7 days
+                    notification.pushType = metadata.apns.pushType;
                     notification.topic = metadata.apns.topic;
+                    notification.expiry = Math.floor(Date.now() / 1000) + metadata.apns.expiration;
                     notification.priority = metadata.apns.priority;
                     notification.collapseId = options.data.deviceId;
                     notification.mutableContent = true;

@@ -50,9 +50,10 @@ export type GPWUserNotificationMetadata = {
             webpush?: WebpushConfig;
             fcmOptions?: FcmOptions;
         };
-        apns?:
+        apns?: { expiration: number } & (
             | GPWUserNotificationVoIPMetadata
             | GPWUserNotificationAlertMetadata
-            | GPWUserNotificationBackgroundMetadata;
+            | GPWUserNotificationBackgroundMetadata
+        );
     };
 };
