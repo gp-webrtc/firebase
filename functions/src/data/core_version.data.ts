@@ -36,7 +36,7 @@ export const coreVersion: GPWCoreVersionCommon = {
         },
         '0.1.0(2)': {
             upgradableFrom: '0.1.0(1)',
-            supportedIOSVersions: ['0.1.0(5)'],
+            supportedIOSVersions: ['0.1.0(5)', '0.1.0(6)'],
         },
     },
     ios: {
@@ -56,6 +56,9 @@ export const coreVersion: GPWCoreVersionCommon = {
             supportedModelVersions: ['0.1.0(1)'],
         },
         '0.1.0(5)': {
+            supportedModelVersions: ['0.1.0(2)'],
+        },
+        '0.1.0(6)': {
             supportedModelVersions: ['0.1.0(2)'],
         },
     },
