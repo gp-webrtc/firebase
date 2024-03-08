@@ -23,43 +23,24 @@
 import { GPWCoreVersionCommon } from '../models';
 
 export const coreVersion: GPWCoreVersionCommon = {
-    minimalIOSVersion: '0.1.0(1)',
-    minimalModelVersion: '0.1.0(1)',
+    minimalIOSVersion: '0.1.0',
+    minimalModelVersion: '1',
     model: {
-        '0.0.0(0)': {
-            upgradableFrom: '0.0.0(0)',
-            supportedIOSVersions: ['0.0.0(0)'],
+        '0': {
+            upgradableFrom: '0',
+            supportedIOSVersions: ['0.0.0'],
         },
-        '0.1.0(1)': {
-            upgradableFrom: '0.0.0(0)',
-            supportedIOSVersions: ['0.1.0(1)', '0.1.0(2)', '0.1.0(3)', '0.1.0(4)'],
-        },
-        '0.1.0(2)': {
-            upgradableFrom: '0.1.0(1)',
-            supportedIOSVersions: ['0.1.0(5)', '0.1.0(6)'],
+        '1': {
+            upgradableFrom: '0',
+            supportedIOSVersions: ['0.1.0'],
         },
     },
     ios: {
-        '0.0.0(0)': {
-            supportedModelVersions: ['0.0.0(0)'],
+        '0.0.0': {
+            supportedModelVersions: ['0'],
         },
-        '0.1.0(1)': {
-            supportedModelVersions: ['0.1.0(1)'],
-        },
-        '0.1.0(2)': {
-            supportedModelVersions: ['0.1.0(1)'],
-        },
-        '0.1.0(3)': {
-            supportedModelVersions: ['0.1.0(1)'],
-        },
-        '0.1.0(4)': {
-            supportedModelVersions: ['0.1.0(1)'],
-        },
-        '0.1.0(5)': {
-            supportedModelVersions: ['0.1.0(2)'],
-        },
-        '0.1.0(6)': {
-            supportedModelVersions: ['0.1.0(2)'],
+        '0.1.0': {
+            supportedModelVersions: ['1'],
         },
     },
 };

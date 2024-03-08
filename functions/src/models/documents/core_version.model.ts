@@ -22,19 +22,12 @@
 
 import { Timestamp } from 'firebase-admin/firestore';
 
-export type GPWCoreModelVersion = '0.0.0(0)' | '0.1.0(1)' | '0.1.0(2)';
-export type GPWCoreIOSVersion =
-    | '0.0.0(0)'
-    | '0.1.0(1)'
-    | '0.1.0(2)'
-    | '0.1.0(3)'
-    | '0.1.0(4)'
-    | '0.1.0(5)'
-    | '0.1.0(6)';
+export type GPWCoreModelVersion = '0' | '1';
+export type GPWCoreIOSVersion = '0.0.0' | '0.1.0';
 
 export type GPWCoreVersionCommon = {
-    minimalIOSVersion: string;
-    minimalModelVersion: string;
+    minimalIOSVersion: GPWCoreIOSVersion;
+    minimalModelVersion: GPWCoreModelVersion;
     model: {
         [key in GPWCoreModelVersion]: {
             upgradableFrom: GPWCoreModelVersion;

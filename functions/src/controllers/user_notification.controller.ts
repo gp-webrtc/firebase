@@ -106,7 +106,7 @@ export class GPWUserNotificationController {
                     notification.id = uuid;
                     notification.pushType = metadata.apns.pushType;
                     notification.topic = metadata.apns.topic;
-                    notification.expiry = Math.floor(Date.now() / 1000) + metadata.apns.expiration;
+                    notification.expiry = 0;
                     notification.priority = metadata.apns.priority;
                     // notification.mutableContent = true;
                     notification.payload = options.data;
