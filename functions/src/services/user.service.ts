@@ -32,7 +32,7 @@ export class GPWUserService {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async create(userId: string, displayName: string, modelVersion: '0.1.0(2)') {
+    async create(userId: string, displayName: string, modelVersion: '1') {
         const db = firestore();
         const ts = Timestamp.now();
 
@@ -48,7 +48,7 @@ export class GPWUserService {
                     onDeviceAdded: true,
                 },
             },
-            modelVersion: '0.1.0(1)',
+            modelVersion: '1',
             creationDate: ts,
             modificationDate: ts,
         };

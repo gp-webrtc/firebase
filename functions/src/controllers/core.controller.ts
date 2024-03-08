@@ -88,9 +88,8 @@ export class GPWCoreController {
 }
 
 const updateUserModelTo: { [key in GPWCoreModelVersion]: (userId: string) => Promise<void> } = {
-    '0.0.0(0)': dummy,
-    '0.1.0(1)': updateUserModelTo_0_1_0_1,
-    '0.1.0(2)': updateUserModelTo_0_1_0_2,
+    '0': dummy,
+    '1': updateUserModelTo_1,
 };
 
 async function updateUserModel(userId: string, version: GPWCoreModelVersion) {
@@ -101,7 +100,7 @@ async function updateUserModel(userId: string, version: GPWCoreModelVersion) {
         if ('modelVersion' in user) {
             sourceVersion = user.modelVersion;
         } else {
-            sourceVersion = '0.0.0(0)';
+            sourceVersion = '0';
         }
         if (targetVersion.upgradableFrom <= sourceVersion) {
             logger.info(`Upgrading user ${userId} from ${sourceVersion} to ${targetVersion}`);
@@ -119,23 +118,7 @@ async function dummy(userId: string) {
     throw Error('Dummy upgrade');
 }
 
-async function updateUserModelTo_0_1_0_1(userId: string) {
-    const user = await userService.get(userId);
-    if (user) {
-        const updatedUser: GPWUser = {
-            modelVersion: '0.1.0(1)',
-            userId: user.userId,
-            isEncrypted: user.isEncrypted,
-            encrypted: user.encrypted,
-            settings: user.settings,
-            creationDate: user.creationDate,
-            modificationDate: user.modificationDate,
-        };
-        await userService.save(userId, updatedUser);
-    }
-}
-
-async function updateUserModelTo_0_1_0_2(userId: string) {
+async function updateUserModelTo_1(userId: string) {
     // Cleanup
     const db = firestore();
     const docs = await db.collection(`/users/${userId}/notificationRegistrationTokens`).listDocuments();
@@ -147,7 +130,7 @@ async function updateUserModelTo_0_1_0_2(userId: string) {
     const user = await userService.get(userId);
     if (user) {
         const updatedUser: GPWUser = {
-            modelVersion: '0.1.0(2)',
+            modelVersion: '1',
             userId: user.userId,
             isEncrypted: user.isEncrypted,
             encrypted: user.encrypted,
