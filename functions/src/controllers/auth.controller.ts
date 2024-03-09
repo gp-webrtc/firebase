@@ -20,7 +20,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import * as axios from 'axios';
+// import * as axios from 'axios';
 import { UserRecord } from 'firebase-functions/v1/auth';
 
 import {
@@ -32,16 +32,16 @@ import {
 } from '../services';
 
 export class GPWAuthController {
-    async onAccountCreated(user: UserRecord) {
-        // Generate a randome display name
-        const result = await axios.default.get('https://randommer.io/api/Name?nameType=fullname&quantity=1', {
-            headers: { 'X-Api-Key': process.env.RANDOMMER_IO_API_KEY },
-        });
-        const displayName = result.data[0] ?? 'Nameless Joe';
+    // async onAccountCreated(user: UserRecord) {
+    //     // Generate a randome display name
+    //     const result = await axios.default.get('https://randommer.io/api/Name?nameType=fullname&quantity=1', {
+    //         headers: { 'X-Api-Key': process.env.RANDOMMER_IO_API_KEY },
+    //     });
+    //     const displayName = result.data[0] ?? 'Nameless Joe';
 
-        // Create the user record
-        await userService.create(user.uid, displayName, '1');
-    }
+    //     // Create the user record
+    //     await userService.create(user.uid, displayName, '1');
+    // }
 
     async onAccountDeleted(user: UserRecord) {
         await userCallService.deleteAll(user.uid);

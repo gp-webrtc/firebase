@@ -45,11 +45,11 @@ setGlobalOptions({ region: 'europe-west3' });
 const enforceAppCheck = !process.env.GPW_FIREBASE_EMULATOR ? true : false;
 
 export const auth = {
-    onAccountCreated: functions
-        .runWith({ secrets: ['RANDOMMER_IO_API_KEY'] })
-        .region('europe-west3')
-        .auth.user()
-        .onCreate(authController.onAccountCreated),
+    // onAccountCreated: functions
+    //     .runWith({ secrets: ['RANDOMMER_IO_API_KEY'] })
+    //     .region('europe-west3')
+    //     .auth.user()
+    //     .onCreate(authController.onAccountCreated),
     onAccountDeleted: functions.region('europe-west3').auth.user().onDelete(authController.onAccountDeleted),
 };
 
@@ -60,6 +60,7 @@ export const core = {
 
 export const user = {
     // User documents
+    onCreated: onDocumentCreated('/users/{userId}', userController.onDocumentCreated),
     onUpdated: onDocumentUpdated('/users/{userId}', userController.onDocumentUpdated),
 
     // User Device documents

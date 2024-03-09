@@ -31,14 +31,39 @@ service cloud.firestore {
         }
 
         // Verifies that the user creation is valid
+        function isValidUserCreation() {
+            return request.resource.data.keys().hasOnly(['userId', 'encrypted', 'settings', 'isEncrypted', 'modelVersion', 'creationDate', 'modificationDate']) &&
+                   request.resource.data.userId == request.auth.uid &&
+                   request.resource.data.encrypted is string &&
+                   request.resource.data.isEncrypted is bool &&
+                   request.resource.data.modelVersion is string && 
+                   request.resource.data.settings.keys().hasOnly(['notifications']) &&
+                   request.resource.data.settings.notifications.keys().hasOnly(['isEnabled', 'onDeviceAdded']) &&
+                   request.resource.data.settings.notifications.isEnabled is bool &&
+                   request.resource.data.settings.notifications.onDeviceAdded is bool;
+        }
+
+        // Verifies that the user creation is valid
         function isValidUserUpdate() {
             return isValidUserEncryptedDataUpdate() || isValidUserSetingsUpdate();
         }
 
         function isValidUserEncryptedDataUpdate() {
             return request.resource.data.userId == request.auth.uid &&
-                   request.resource.data.diff(resource.data).affectedKeys().hasOnly(['encrypted']) &&
-                   request.resource.data.encrypted is string;
+                   request.resource.data.diff(resource.data).affectedKeys().hasOnly(['encrypted', 'isEncrypted']) &&
+                   request.resource.data.encrypted is string &&
+                   request.resource.data.isEncrypted is bool;
+        }
+
+        function isValidUserSetingsUpdate() {
+            return request.resource.data.userId == request.auth.uid &&
+                   request.resource.data.diff(resource.data).affectedKeys().hasOnly(['settings']) &&
+                   request.resource.data.settings.diff(resource.data.settings).affectedKeys().hasOnly(['notifications']) &&
+                   request.resource.data.settings.notifications.diff(resource.data.settings.notifications).affectedKeys().hasOnly(['isEnabled', 'onDeviceAdded']) &&
+                   request.resource.data.settings.notifications.isEnabled is bool &&
+                   request.resource.data.settings.notifications.onMessageReceived is bool &&
+                   request.resource.data.settings.notifications.onDeviceAdded is bool &&
+                   request.resource.data.settings.notifications.onDeviceRemoved is bool;
         }
 
         function isValidUserDeviceCreation(deviceId) {
@@ -47,15 +72,6 @@ service cloud.firestore {
                    request.resource.data.keys().hasOnly(['userId', 'deviceId', 'encrypted', 'isEncrypted', 'creationDate', 'modificationDate']) &&
                    request.resource.data.isEncrypted is bool &&
                    request.resource.data.encrypted is string;
-        }
-
-        function isValidUserSetingsUpdate() {
-            return request.resource.data.userId == request.auth.uid &&
-                   request.resource.data.diff(resource.data).affectedKeys().hasOnly(['settings']) &&
-                   request.resource.data.settings.notifications.isEnabled is bool &&
-                   request.resource.data.settings.notifications.onMessageReceived is bool &&
-                   request.resource.data.settings.notifications.onDeviceAdded is bool &&
-                   request.resource.data.settings.notifications.onDeviceRemoved is bool;
         }
 
         function isValidUserNotificationUpdate() {
@@ -95,8 +111,9 @@ service cloud.firestore {
         // User documents
         match /users/{userId}  {
             allow read: if isUser(userId);
-            allow create, delete: if false;
+            allow create: if (isUser(userId) && isValidUserCreation());
             allow update: if (isUser(userId) && isValidUserUpdate());
+            allow delete: if false;
 
             // User devices documents
             match /devices/{deviceId}  {

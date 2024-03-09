@@ -23,7 +23,7 @@
 import { firestore } from 'firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
 
-import { GPWUser } from '../models';
+import { GPWCoreModelVersion, GPWUser, GPWUserSettings } from '../models';
 
 export class GPWUserService {
     async get(userId: string): Promise<GPWUser | undefined> {
@@ -32,7 +32,13 @@ export class GPWUserService {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async create(userId: string, displayName: string, modelVersion: '1') {
+    async create(
+        userId: string,
+        encrypted: string,
+        isEncrypted: boolean,
+        settings: GPWUserSettings,
+        modelVersion: GPWCoreModelVersion
+    ) {
         const db = firestore();
         const ts = Timestamp.now();
 
@@ -40,15 +46,10 @@ export class GPWUserService {
         const user: GPWUser = {
             // modelVersion: modelVersion,
             userId: userId,
-            isEncrypted: false,
-            encrypted: Buffer.from(JSON.stringify({ displayName })).toString('base64'),
-            settings: {
-                notifications: {
-                    isEnabled: true,
-                    onDeviceAdded: true,
-                },
-            },
-            modelVersion: '1',
+            isEncrypted: isEncrypted,
+            encrypted: encrypted,
+            settings: settings,
+            modelVersion: modelVersion,
             creationDate: ts,
             modificationDate: ts,
         };
