@@ -22,8 +22,8 @@
 
 import { Timestamp } from 'firebase-admin/firestore';
 
-export type GPWCoreModelVersion = '0' | '1';
-export type GPWCoreIOSVersion = '0.0.0' | '0.1.0';
+export type GPWCoreModelVersion = '1';
+export type GPWCoreIOSVersion = '0.1.0';
 
 export type GPWCoreVersionCommon = {
     minimalIOSVersion: GPWCoreIOSVersion;

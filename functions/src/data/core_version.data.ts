@@ -26,19 +26,12 @@ export const coreVersion: GPWCoreVersionCommon = {
     minimalIOSVersion: '0.1.0',
     minimalModelVersion: '1',
     model: {
-        '0': {
-            upgradableFrom: '0',
-            supportedIOSVersions: ['0.0.0'],
-        },
         '1': {
-            upgradableFrom: '0',
+            upgradableFrom: '1',
             supportedIOSVersions: ['0.1.0'],
         },
     },
     ios: {
-        '0.0.0': {
-            supportedModelVersions: ['0'],
-        },
         '0.1.0': {
             supportedModelVersions: ['1'],
         },
