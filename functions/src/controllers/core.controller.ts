@@ -25,7 +25,7 @@ import { HttpsError } from 'firebase-functions/v1/auth';
 import { CallableRequest } from 'firebase-functions/v2/https';
 import { logger } from 'firebase-functions/v2';
 
-import { GPWCoreModelUpdateBody, GPWCoreModelVersion, GPWUser } from '../models';
+import { GPWCoreModelUpdateBody, GPWCoreModelVersion } from '../models';
 import { userService } from '../services';
 import { coreStatus, coreVersion } from '../data';
 import { Timestamp } from 'firebase-admin/firestore';
@@ -88,7 +88,6 @@ export class GPWCoreController {
 }
 
 const updateUserModelTo: { [key in GPWCoreModelVersion]: (userId: string) => Promise<void> } = {
-    '0': dummy,
     '1': updateUserModelTo_1,
 };
 
@@ -100,7 +99,7 @@ async function updateUserModel(userId: string, version: GPWCoreModelVersion) {
         if ('modelVersion' in user) {
             sourceVersion = user.modelVersion;
         } else {
-            sourceVersion = '0';
+            sourceVersion = '1';
         }
         if (targetVersion.upgradableFrom <= sourceVersion) {
             logger.info(`Upgrading user ${userId} from ${sourceVersion} to ${targetVersion}`);
@@ -113,31 +112,31 @@ async function updateUserModel(userId: string, version: GPWCoreModelVersion) {
     }
 }
 
-async function dummy(userId: string) {
+async function updateUserModelTo_1(userId: string) {
     logger.error(`User ${userId} called for dummy update`);
     throw Error('Dummy upgrade');
 }
 
-async function updateUserModelTo_1(userId: string) {
-    // Cleanup
-    const db = firestore();
-    const docs = await db.collection(`/users/${userId}/notificationRegistrationTokens`).listDocuments();
-    for (const doc of docs) {
-        await doc.delete();
-    }
+// async function updateUserModelTo_1(userId: string) {
+//     // Cleanup
+//     const db = firestore();
+//     const docs = await db.collection(`/users/${userId}/notificationRegistrationTokens`).listDocuments();
+//     for (const doc of docs) {
+//         await doc.delete();
+//     }
 
-    // Update user mode
-    const user = await userService.get(userId);
-    if (user) {
-        const updatedUser: GPWUser = {
-            modelVersion: '1',
-            userId: user.userId,
-            isEncrypted: user.isEncrypted,
-            encrypted: user.encrypted,
-            settings: user.settings,
-            creationDate: user.creationDate,
-            modificationDate: user.modificationDate,
-        };
-        await userService.save(userId, updatedUser);
-    }
-}
+//     // Update user mode
+//     const user = await userService.get(userId);
+//     if (user) {
+//         const updatedUser: GPWUser = {
+//             modelVersion: '1',
+//             userId: user.userId,
+//             isEncrypted: user.isEncrypted,
+//             encrypted: user.encrypted,
+//             settings: user.settings,
+//             creationDate: user.creationDate,
+//             modificationDate: user.modificationDate,
+//         };
+//         await userService.save(userId, updatedUser);
+//     }
+// }
