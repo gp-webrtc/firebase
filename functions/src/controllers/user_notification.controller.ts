@@ -20,7 +20,6 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import { Timestamp } from 'firebase-admin/firestore';
 import { Change, FirestoreEvent, QueryDocumentSnapshot } from 'firebase-functions/v2/firestore';
 
 import { userNotificationMetadata } from '../data';
@@ -32,18 +31,14 @@ export class GPWUserNotificationController {
     async onDocumentUpdated(
         event: FirestoreEvent<Change<QueryDocumentSnapshot> | undefined, { userId: string; notificationId: string }>
     ) {
-        const ts = Timestamp.now();
-
         if (event.data) {
             const userId = event.params.userId;
             const notificationId = event.params.notificationId;
             const before = event.data.before.data() as GPWUserNotification;
             const after = event.data.before.data() as GPWUserNotification;
-            after.modificationDate = before.modificationDate;
 
             if (before.wasRead !== after.wasRead || before.wasReceived || after.wasReceived) {
-                after.modificationDate = ts;
-                await userNotificationService.save(userId, notificationId, after);
+                await userNotificationService.updateModificationDate(userId, notificationId);
             }
         }
     }

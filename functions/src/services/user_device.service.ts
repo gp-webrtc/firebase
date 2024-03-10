@@ -39,6 +39,13 @@ export class GPWUserDeviceService {
         await db.collection(`/users/${userId}/devices`).doc(deviceId).update(device);
     }
 
+    async updateModificationDate(userId: string, deviceId: string) {
+        const db = firestore();
+        const ts = Timestamp.now();
+
+        await db.collection(`/users/${userId}/devices`).doc(deviceId).update({ modificationDate: ts });
+    }
+
     async deleteAll(userId: string) {
         const db = firestore();
         const docs = await db.collection(`/users/${userId}/devices`).listDocuments();

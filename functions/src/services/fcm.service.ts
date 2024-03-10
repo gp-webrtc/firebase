@@ -48,7 +48,7 @@ export class GPWFCMService {
             ) {
                 const tokenId = tokens[i].tokenId;
                 await userNotificationTokenService.delete(userId, tokenId);
-                logger.warn(`User notification registration token ${tokenId} deleted`);
+                logger.warn(`User notification token ${tokenId} deleted`);
             }
             i++;
         }

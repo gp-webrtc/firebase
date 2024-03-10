@@ -129,13 +129,7 @@ service cloud.firestore {
                 allow create: if false;
             }
 
-            // User notification registration token documents
-            match /notificationRegistrationTokens/{tokenId}  {
-                allow read: if isUser(userId);
-                allow write: if false;
-            }
-
-            // User notification registration token documents
+            // User notification token documents
             match /notificationTokens/{tokenId}  {
                 allow read: if isUser(userId);
                 allow write: if false;

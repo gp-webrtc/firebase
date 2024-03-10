@@ -20,7 +20,6 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import { Timestamp } from 'firebase-admin/firestore';
 import { Change, DocumentSnapshot, FirestoreEvent, QueryDocumentSnapshot } from 'firebase-functions/v2/firestore';
 
 import { userDeviceService } from '../services';
@@ -48,8 +47,6 @@ export class GPWUserDeviceController {
     async onDocumentUpdated(
         event: FirestoreEvent<Change<QueryDocumentSnapshot> | undefined, { userId: string; deviceId: string }>
     ) {
-        const ts = Timestamp.now();
-
         if (event.data) {
             const userId = event.params.userId;
             const deviceId = event.params.deviceId;
@@ -58,8 +55,7 @@ export class GPWUserDeviceController {
             after.modificationDate = before.modificationDate;
 
             if (before.encrypted !== after.encrypted || before.isEncrypted !== after.isEncrypted) {
-                after.modificationDate = ts;
-                await userDeviceService.save(userId, deviceId, after);
+                await userDeviceService.updateModificationDate(userId, deviceId);
             }
         }
     }

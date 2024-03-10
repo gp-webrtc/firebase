@@ -68,4 +68,11 @@ export class GPWUserService {
         const db = firestore();
         await db.collection('/users').doc(userId).delete();
     }
+
+    async updateModificationDate(userId: string) {
+        const db = firestore();
+        const ts = Timestamp.now();
+
+        await db.collection('/users').doc(userId).update({ modificationDate: ts });
+    }
 }
