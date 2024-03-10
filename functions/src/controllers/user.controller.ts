@@ -58,7 +58,7 @@ export class GPWUserController {
                 before.isEncrypted !== after.isEncrypted ||
                 before.settings !== after.settings
             ) {
-                await userService.save(userId, after);
+                await userService.updateModificationDate(userId);
             }
         }
     }

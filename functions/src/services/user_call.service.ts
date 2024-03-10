@@ -59,6 +59,13 @@ export class GPWUserCallService {
         await db.collection(`/users/${userId}/calls`).doc(callId).update(call);
     }
 
+    async updateModificationDate(userId: string, callId: string) {
+        const db = firestore();
+        const ts = Timestamp.now();
+
+        await db.collection(`/users/${userId}/calls`).doc(callId).update({ modificationDate: ts });
+    }
+
     async delete(userId: string, callId: string) {
         const db = firestore();
         await db.collection(`/users/${userId}/calls`).doc(callId).delete();

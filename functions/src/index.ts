@@ -29,7 +29,6 @@ import {
     httpController,
     userController,
     userDeviceController,
-    userNotificationRegistrationTokenController,
     userNotificationTokenController,
     userNotificationController,
 } from './controllers';
@@ -67,17 +66,7 @@ export const user = {
     onDeviceCreated: onDocumentCreated('users/{userId}/devices/{deviceId}', userDeviceController.onDocumentCreated),
     onDeviceUpdated: onDocumentUpdated('users/{userId}/devices/{deviceId}', userDeviceController.onDocumentUpdated),
 
-    // User FCM Registration token callable functions
-    insertOrUpdateNotificationRegistrationToken: onCall(
-        { region: 'europe-west3', enforceAppCheck: enforceAppCheck },
-        userNotificationRegistrationTokenController.onInsertOrUpdateFunctionCalled
-    ),
-    deleteNotificationRegistrationTokenDelete: onCall(
-        { region: 'europe-west3', enforceAppCheck: enforceAppCheck },
-        userNotificationRegistrationTokenController.onDeleteFunctionCalled
-    ),
-
-    // User FCM Registration token callable functions
+    // User notification token callable functions
     insertOrUpdateNotificationToken: onCall(
         { region: 'europe-west3', enforceAppCheck: enforceAppCheck },
         userNotificationTokenController.onInsertOrUpdateFunctionCalled

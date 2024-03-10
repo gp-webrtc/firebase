@@ -84,9 +84,7 @@ export class GPWAPNSService {
                     const token = tokens.find((token) => token.token === failed.device);
                     if (token) {
                         await userNotificationTokenService.delete(userId, token.tokenId);
-                        logger.warn(
-                            `Delete notification registration token /users/${userId}/notificationTokens/${token.tokenId}`
-                        );
+                        logger.warn(`Delete notification token /users/${userId}/notificationTokens/${token.tokenId}`);
                     }
                 }
             }

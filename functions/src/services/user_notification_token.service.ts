@@ -69,6 +69,13 @@ export class GPWUserNotificationTokenService {
         await db.collection(`/users/${userId}/notificationTokens`).doc(tokenId).update(NotificationToken);
     }
 
+    async updateModificationDate(userId: string, tokenId: string) {
+        const db = firestore();
+        const ts = Timestamp.now();
+
+        await db.collection(`/users/${userId}/notificationTokens`).doc(tokenId).update({ modificationDate: ts });
+    }
+
     async delete(userId: string, tokenId: string) {
         const db = firestore();
         await db.collection(`/users/${userId}/notificationTokens`).doc(tokenId).delete();

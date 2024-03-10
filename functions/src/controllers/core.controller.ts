@@ -116,27 +116,3 @@ async function updateUserModelTo_1(userId: string) {
     logger.error(`User ${userId} called for dummy update`);
     throw Error('Dummy upgrade');
 }
-
-// async function updateUserModelTo_1(userId: string) {
-//     // Cleanup
-//     const db = firestore();
-//     const docs = await db.collection(`/users/${userId}/notificationRegistrationTokens`).listDocuments();
-//     for (const doc of docs) {
-//         await doc.delete();
-//     }
-
-//     // Update user mode
-//     const user = await userService.get(userId);
-//     if (user) {
-//         const updatedUser: GPWUser = {
-//             modelVersion: '1',
-//             userId: user.userId,
-//             isEncrypted: user.isEncrypted,
-//             encrypted: user.encrypted,
-//             settings: user.settings,
-//             creationDate: user.creationDate,
-//             modificationDate: user.modificationDate,
-//         };
-//         await userService.save(userId, updatedUser);
-//     }
-// }

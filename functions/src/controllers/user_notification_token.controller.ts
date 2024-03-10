@@ -65,7 +65,7 @@ export class GPWUserNotificationTokenController {
                 } else {
                     throw new HttpsError(
                         'permission-denied',
-                        'You are not authorized to add or update user registration token.r'
+                        'You are not authorized to add or update user notification token.'
                     );
                 }
             } else {
