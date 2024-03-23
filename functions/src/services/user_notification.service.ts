@@ -92,12 +92,12 @@ export class GPWUserNotificationService {
                 return {
                     path: `/users/${options.data.userId}/devices/${options.data.deviceId}`,
                 };
-            case 'call':
-                return {
-                    callId: options.data.callId,
-                    callerId: options.data.callerId,
-                    displayName: options.data.displayName,
-                };
+            // case 'call':
+            //     return {
+            //         callId: options.data.callId,
+            //         callerId: options.data.callerId,
+            //         displayName: options.data.displayName,
+            //     };
         }
     }
 }

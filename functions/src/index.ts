@@ -59,7 +59,7 @@ export const core = {
 
 export const user = {
     // User documents
-    onCreated: onDocumentCreated('/users/{userId}', userController.onDocumentCreated),
+    // onCreated: onDocumentCreated('/users/{userId}', userController.onDocumentCreated),
     onUpdated: onDocumentUpdated('/users/{userId}', userController.onDocumentUpdated),
 
     // User Device documents

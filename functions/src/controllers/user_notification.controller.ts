@@ -69,18 +69,18 @@ export class GPWUserNotificationController {
             })
             .flatMap((token) => (token ? [{ ...token }] : []));
 
-        const voipTokens = tokens
-            .map((token) => {
-                const deviceToken = 'token' in token ? token.token : token.deviceToken;
-                if ('apnsToken' in deviceToken && deviceToken.apnsToken.voip)
-                    return {
-                        tokenId: token.tokenId,
-                        token: deviceToken.apnsToken.voip,
-                        environment: deviceToken.apnsToken.environment,
-                    };
-                else return undefined;
-            })
-            .flatMap((token) => (token ? [{ ...token }] : []));
+        // const voipTokens = tokens
+        //     .map((token) => {
+        //         const deviceToken = 'token' in token ? token.token : token.deviceToken;
+        //         if ('apnsToken' in deviceToken && deviceToken.apnsToken.voip)
+        //             return {
+        //                 tokenId: token.tokenId,
+        //                 token: deviceToken.apnsToken.voip,
+        //                 environment: deviceToken.apnsToken.environment,
+        //             };
+        //         else return undefined;
+        //     })
+        //     .flatMap((token) => (token ? [{ ...token }] : []));
 
         const fcmTokens = tokens
             .map((token) => {
@@ -95,25 +95,25 @@ export class GPWUserNotificationController {
             .flatMap((token) => (token ? [{ tokenId: token.tokenId, token: token.token }] : []));
 
         switch (options.type) {
-            case 'call':
-                if (metadata.apns && metadata.apns.pushType === 'voip' && voipTokens.length > 0) {
-                    const notification = new Notification();
-                    notification.id = uuid;
-                    notification.pushType = metadata.apns.pushType;
-                    notification.topic = metadata.apns.topic;
-                    notification.expiry = 0;
-                    notification.priority = metadata.apns.priority;
-                    // notification.mutableContent = true;
-                    notification.payload = options.data;
-                    await apnsService.send(userId, voipTokens, notification);
-                }
-                if (metadata.fcm && fcmTokens.length > 0) {
-                    await fcmService.send(userId, fcmTokens, {
-                        ...metadata.fcm,
-                        data,
-                    });
-                }
-                break;
+            // case 'call':
+            //     if (metadata.apns && metadata.apns.pushType === 'voip' && voipTokens.length > 0) {
+            //         const notification = new Notification();
+            //         notification.id = uuid;
+            //         notification.pushType = metadata.apns.pushType;
+            //         notification.topic = metadata.apns.topic;
+            //         notification.expiry = 0;
+            //         notification.priority = metadata.apns.priority;
+            //         // notification.mutableContent = true;
+            //         notification.payload = options.data;
+            //         await apnsService.send(userId, voipTokens, notification);
+            //     }
+            //     if (metadata.fcm && fcmTokens.length > 0) {
+            //         await fcmService.send(userId, fcmTokens, {
+            //             ...metadata.fcm,
+            //             data,
+            //         });
+            //     }
+            //     break;
             case 'userCallReceived':
                 if (metadata.apns && metadata.apns.pushType === 'alert' && apnsTokens.length > 0) {
                     const notification = new Notification();
@@ -124,12 +124,18 @@ export class GPWUserNotificationController {
                     notification.priority = metadata.apns.priority;
                     notification.collapseId = options.data.callId;
                     notification.mutableContent = true;
+                    notification.aps.category = 'org.gpfister.republik.encrypted';
                     notification.aps.alert = {
-                        title: 'Incoming call',
-                        body: 'End to end encrypted call',
+                        title: 'Encrypted',
+                        body: 'Encrypted',
                     };
-                    notification.aps.category = metadata.apns.category;
-                    (notification.payload = options.data), await apnsService.send(userId, apnsTokens, notification);
+                    notification.payload = {
+                        encryptedCategoryIdentifier: Buffer.from(metadata.apns.category, 'utf8').toString('base64'),
+                        encryptedPayload: Buffer.from(JSON.stringify({ userInfo: options.data }), 'utf8').toString(
+                            'base64'
+                        ),
+                    };
+                    await apnsService.send(userId, apnsTokens, notification);
                 }
                 if (metadata.fcm && fcmTokens.length > 0) {
                     await fcmService.send(userId, fcmTokens, {

@@ -20,4 +20,4 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-export type GPWUserNotificationType = 'userCallReceived' | 'userDeviceAdded' | 'call';
+export type GPWUserNotificationType = 'userCallReceived' | 'userDeviceAdded'; /*  | 'call'; */
