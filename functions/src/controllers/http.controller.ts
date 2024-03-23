@@ -45,7 +45,7 @@ httpController.post('/users/:userId/call', async (req, res) => {
         const callId = await userCallService.create(userId, '21635e00-06ca-4478-9039-05e871b4324b', 'Test device');
 
         await userNotificationController.send(userId, {
-            type: 'call',
+            type: 'userCallReceived',
             data: { callId, callerId: '21635e00-06ca-4478-9039-05e871b4324b', displayName: 'Test device' },
         });
 

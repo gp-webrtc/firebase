@@ -20,23 +20,13 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import { Change, DocumentSnapshot, FirestoreEvent, QueryDocumentSnapshot } from 'firebase-functions/v2/firestore';
+import { Change, FirestoreEvent, QueryDocumentSnapshot } from 'firebase-functions/v2/firestore';
 // import { logger } from 'firebase-functions/v2';
 
 import { GPWUser } from '../models';
 import { userService } from '../services';
 
 export class GPWUserController {
-    async onDocumentCreated(event: FirestoreEvent<DocumentSnapshot | undefined, { userId: string }>) {
-        if (event.data) {
-            const userId = event.params.userId;
-
-            const data = event.data.data() as GPWUser;
-
-            await userService.create(userId, data.encrypted, data.isEncrypted, data.settings, data.modelVersion);
-        }
-    }
-
     async onDocumentUpdated(event: FirestoreEvent<Change<QueryDocumentSnapshot> | undefined, { userId: string }>) {
         if (event.data) {
             const userId = event.params.userId;

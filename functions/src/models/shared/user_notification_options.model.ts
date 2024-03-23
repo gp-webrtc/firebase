@@ -31,7 +31,7 @@ type GPWUserNotificationOnDeviceAddedOptions = {
 };
 
 type GPWUserNotificationCallOptions = {
-    type: 'call' | 'userCallReceived';
+    type: /* 'call' | */ 'userCallReceived';
     data: { callId: string; callerId: string; displayName: string };
 };
 

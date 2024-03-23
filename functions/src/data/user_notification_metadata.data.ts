@@ -28,8 +28,8 @@ export const userNotificationMetadata: GPWUserNotificationMetadata = {
             pushType: 'alert',
             priority: 10,
             topic: 'org.gpfister.republik',
-            category: 'USER_CALL_RECEIVED',
-            expiration: 5, // 5 Seconds
+            category: 'org.gpfister.republik.userCallReceived',
+            expiration: 0,
         },
     },
     userDeviceAdded: {
@@ -37,16 +37,16 @@ export const userNotificationMetadata: GPWUserNotificationMetadata = {
             pushType: 'alert',
             priority: 5,
             topic: 'org.gpfister.republik',
-            category: 'USER_DEVICE_ADDED',
+            category: 'org.gpfister.republik.userDeviceAdded',
             expiration: 3600 * 24 * 7, // 7 days
         },
     },
-    call: {
-        apns: {
-            pushType: 'voip',
-            priority: 10,
-            topic: 'org.gpfister.republik.voip',
-            expiration: 5, // 5 Seconds
-        },
-    },
+    // call: {
+    //     apns: {
+    //         pushType: 'voip',
+    //         priority: 10,
+    //         topic: 'org.gpfister.republik.voip',
+    //         expiration: 5, // 5 Seconds
+    //     },
+    // },
 };
