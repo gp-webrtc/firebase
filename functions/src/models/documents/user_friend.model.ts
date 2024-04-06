@@ -22,9 +22,9 @@
 
 // import { Timestamp } from 'firebase-admin/firestore';
 
-// export type GPWUserDevice = {
+// export type GPWUserFriend = {
 //     userId: string;
-//     deviceId: string;
+//     friendId: string;
 //     isEncrypted: boolean;
 //     encrypted: string;
 //     creationDate: Timestamp;

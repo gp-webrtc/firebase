@@ -32,7 +32,7 @@ type GPWUserNotificationVoIPMetadata = {
 type GPWUserNotificationAlertMetadata = {
     pushType: 'alert';
     topic: string;
-    priority: 5 | 10;
+    priority?: 5 | 10;
     category: string;
 };
 
@@ -50,7 +50,7 @@ export type GPWUserNotificationMetadata = {
             webpush?: WebpushConfig;
             fcmOptions?: FcmOptions;
         };
-        apns?: { expiration: number } & (
+        apns?: { expiration?: number } & (
             | GPWUserNotificationVoIPMetadata
             | GPWUserNotificationAlertMetadata
             | GPWUserNotificationBackgroundMetadata

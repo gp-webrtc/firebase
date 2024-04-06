@@ -78,26 +78,28 @@ export class GPWUserNotificationService {
         }
     }
 
-    documentData(
-        options: GPWUserNotificationOptions
-    ): { path: string } | { callId: string; callerId: string; displayName: string } {
+    documentData(options: GPWUserNotificationOptions): // | { path: string }
+    | { callId: string; callerId: string; displayName: string }
+        | { callId: string; encryptedCategoryIdentifier: string; encryptedPayload: string } {
         switch (options.type) {
             case 'userCallReceived':
+                return {
+                    ...options.data,
+                };
+            // case 'userDeviceAdded':
+            //     return {
+            //         path: `/users/${options.data.userId}/devices/${options.data.deviceId}`,
+            //     };
+            case 'userEncrypted':
+                return {
+                    ...options.data,
+                };
+            case 'call':
                 return {
                     callId: options.data.callId,
                     callerId: options.data.callerId,
                     displayName: options.data.displayName,
                 };
-            case 'userDeviceAdded':
-                return {
-                    path: `/users/${options.data.userId}/devices/${options.data.deviceId}`,
-                };
-            // case 'call':
-            //     return {
-            //         callId: options.data.callId,
-            //         callerId: options.data.callerId,
-            //         displayName: options.data.displayName,
-            //     };
         }
     }
 }

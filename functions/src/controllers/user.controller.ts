@@ -20,13 +20,19 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import { Change, FirestoreEvent, QueryDocumentSnapshot } from 'firebase-functions/v2/firestore';
-// import { logger } from 'firebase-functions/v2';
+import _ from 'lodash';
+import { Change, DocumentSnapshot, FirestoreEvent, QueryDocumentSnapshot } from 'firebase-functions/v2/firestore';
+import { logger } from 'firebase-functions/v2';
 
 import { GPWUser } from '../models';
-import { userService } from '../services';
+import { userNotificationTokenService, userService } from '../services';
 
 export class GPWUserController {
+    async onDocumentCreated(event: FirestoreEvent<DocumentSnapshot | undefined, { userId: string }>) {
+        const user = event.data;
+        logger.debug(`Document /users/${event.params.userId} created`, user);
+    }
+
     async onDocumentUpdated(event: FirestoreEvent<Change<QueryDocumentSnapshot> | undefined, { userId: string }>) {
         if (event.data) {
             const userId = event.params.userId;
@@ -35,21 +41,23 @@ export class GPWUserController {
 
             // Skipped if this is related to a data update
             if (
-                ('modelVersion' in before && 'modelVersion' in after && before.modelVersion !== after.modelVersion) ||
-                (!('modelVersion' in before) && 'modelVersion' in after) ||
-                ('modelVersion' in before && !('modelVersion' in after))
+                // ('modelVersion' in before && 'modelVersion' in after && before.modelVersion !== after.modelVersion) ||
+                // (!('modelVersion' in before) && 'modelVersion' in after) ||
+                // ('modelVersion' in before && !('modelVersion' in after))
+                _.isEqual(before.modelVersion, after.modelVersion)
             ) {
                 return;
             }
 
             // If this is a monitored change
-            if (
-                before.encrypted !== after.encrypted ||
-                before.isEncrypted !== after.isEncrypted ||
-                before.settings !== after.settings
-            ) {
+            if (!_.isEqual(before.settings, after.settings)) {
+                if (!after.settings.notifications.isEnabled) await userNotificationTokenService.deleteAll(userId);
                 await userService.updateModificationDate(userId);
             }
         }
+    }
+
+    async onDocumentDeleted(event: FirestoreEvent<DocumentSnapshot | undefined, { userId: string }>) {
+        logger.debug(`Document /users/${event.params.userId} deleted`);
     }
 }

@@ -20,12 +20,12 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import * as uuid from 'uuid';
+// import * as uuid from 'uuid';
 import * as express from 'express';
 
-import { Timestamp } from 'firebase-admin/firestore';
+// import { Timestamp } from 'firebase-admin/firestore';
 
-import { GPWUserDevice } from '../models';
+// import { GPWUserDevice } from '../models';
 import { userService, userCallService } from '../services';
 import { userNotificationController } from '.';
 import { logger } from 'firebase-functions/v1';
@@ -42,11 +42,22 @@ httpController.post('/users/:userId/call', async (req, res) => {
 
     if (user) {
         // Create a call session
-        const callId = await userCallService.create(userId, '21635e00-06ca-4478-9039-05e871b4324b', 'Test device');
+        const callId = await userCallService.create(
+            userId,
+            userId,
+            '21635e00-06ca-4478-9039-05e871b4324b',
+            'John Doe',
+            'test SDP'
+        );
 
         await userNotificationController.send(userId, {
             type: 'userCallReceived',
-            data: { callId, callerId: '21635e00-06ca-4478-9039-05e871b4324b', displayName: 'Test device' },
+            data: {
+                callId,
+                callerId: userId,
+                displayName: 'Test SDP',
+                sdp: 'Test SDP',
+            },
         });
 
         res.json({ callId: callId });
@@ -66,11 +77,22 @@ httpController.post('/users/:userId/userCallReceived', async (req, res) => {
 
     if (user) {
         // Create a call session
-        const callId = await userCallService.create(userId, '21635e00-06ca-4478-9039-05e871b4324b', 'Test device');
+        const callId = await userCallService.create(
+            userId,
+            userId,
+            '21635e00-06ca-4478-9039-05e871b4324b',
+            'John Doe',
+            'test SDP'
+        );
 
         await userNotificationController.send(userId, {
             type: 'userCallReceived',
-            data: { callId, callerId: '21635e00-06ca-4478-9039-05e871b4324b', displayName: 'Test device' },
+            data: {
+                callId,
+                callerId: userId,
+                displayName: 'John Doe',
+                sdp: 'Test SDP',
+            },
         });
 
         res.json({ callId: callId });
@@ -81,34 +103,34 @@ httpController.post('/users/:userId/userCallReceived', async (req, res) => {
 });
 
 // build multiple CRUD interfaces:
-httpController.post('/users/:userId/userDeviceAdded', async (req, res) => {
-    const ts = Timestamp.now();
-    const userId = req.params.userId;
-    const deviceId = uuid.v4();
+// httpController.post('/users/:userId/userDeviceAdded', async (req, res) => {
+//     const ts = Timestamp.now();
+//     const userId = req.params.userId;
+//     const deviceId = uuid.v4();
 
-    const user = await userService.get(userId);
+//     const user = await userService.get(userId);
 
-    if (user) {
-        const device: GPWUserDevice = {
-            userId,
-            deviceId,
-            encrypted: '',
-            isEncrypted: false,
-            creationDate: ts,
-            modificationDate: ts,
-        };
+//     if (user) {
+//         const device: GPWUserDevice = {
+//             userId,
+//             deviceId,
+//             encrypted: '',
+//             isEncrypted: false,
+//             creationDate: ts,
+//             modificationDate: ts,
+//         };
 
-        await userNotificationController.send(userId, {
-            type: 'userDeviceAdded',
-            data: device,
-            notification: {
-                title: 'New device added',
-                body: 'You have added devive iPhone tralala.',
-            },
-        });
+//         await userNotificationController.send(userId, {
+//             type: 'userDeviceAdded',
+//             data: device,
+//             notification: {
+//                 title: 'New device added',
+//                 body: 'You have added devive iPhone tralala.',
+//             },
+//         });
 
-        res.sendStatus(200);
-    } else {
-        res.status(404).json({ error: 'User not found' });
-    }
-});
+//         res.sendStatus(200);
+//     } else {
+//         res.status(404).json({ error: 'User not found' });
+//     }
+// });
