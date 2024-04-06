@@ -20,7 +20,6 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import * as UUID from 'uuid';
 import { firestore } from 'firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
 import { GPWUserCall } from '../models';
@@ -31,18 +30,28 @@ export class GPWUserCallService {
         return (await db.collection(`/users/${userId}/calls`).doc(callId).get())?.data() as GPWUserCall;
     }
 
-    async create(userId: string, callerId: string, displayName: string): Promise<string> {
+    async create(
+        userId: string,
+        callerId: string,
+        localCallId: string,
+        displayName: string,
+        callerSDP: string
+    ): Promise<string> {
         const db = firestore();
         const ts = Timestamp.now();
 
-        const callId = UUID.v4();
+        const callId = await db.collection(`/users/${userId}/calls`).doc().id;
 
         // Create the user record
         const call: GPWUserCall = {
-            userId: userId,
-            callId: callId,
-            callerId: callerId,
-            displayName: displayName,
+            userId,
+            callId,
+            callerId,
+            localCallId,
+            displayName,
+            sdp: {
+                caller: callerSDP,
+            },
             creationDate: ts,
             modificationDate: ts,
         };

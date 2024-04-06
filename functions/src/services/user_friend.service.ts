@@ -20,13 +20,38 @@
 // // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // //
 
+// import { firestore } from 'firebase-admin';
+// import { GPWUserFriend } from '../models';
 // import { Timestamp } from 'firebase-admin/firestore';
 
-// export type GPWUserDevice = {
-//     userId: string;
-//     deviceId: string;
-//     isEncrypted: boolean;
-//     encrypted: string;
-//     creationDate: Timestamp;
-//     modificationDate: Timestamp;
-// };
+// export class GPWUserFriendService {
+//     async get(userId: string, friendId: string): Promise<GPWUserFriend | undefined> {
+//         const db = firestore();
+//         return (await db.collection(`/users/${userId}/friends`).doc(friendId).get())?.data() as GPWUserFriend;
+//     }
+
+//     async save(userId: string, friendId: string, friend: GPWUserFriend) {
+//         const ts = Timestamp.now();
+//         const db = firestore();
+
+//         friend.modificationDate = ts;
+
+//         await db.collection(`/users/${userId}/friends`).doc(friendId).update(friend);
+//     }
+
+//     async updateModificationDate(userId: string, friendId: string) {
+//         const db = firestore();
+//         const ts = Timestamp.now();
+
+//         await db.collection(`/users/${userId}/friends`).doc(friendId).update({ modificationDate: ts });
+//     }
+
+//     async deleteAll(userId: string) {
+//         const db = firestore();
+//         const docs = await db.collection(`/users/${userId}/friends`).listDocuments();
+
+//         for (const doc of docs) {
+//             await doc.delete();
+//         }
+//     }
+// }

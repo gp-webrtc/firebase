@@ -24,7 +24,7 @@ import { GPWAPNSService } from './apns.service';
 import { GPWFCMService } from './fcm.service';
 import { GPWUserService } from './user.service';
 import { GPWUserCallService } from './user_call.service';
-import { GPWUserDeviceService } from './user_device.service';
+// import { GPWUserDeviceService } from './user_device.service';
 import { GPWUserNotificationTokenService } from './user_notification_token.service';
 import { GPWUserNotificationService } from './user_notification.service';
 
@@ -33,6 +33,6 @@ export const fcmService = new GPWFCMService();
 
 export const userService = new GPWUserService();
 export const userCallService = new GPWUserCallService();
-export const userDeviceService = new GPWUserDeviceService();
+// export const userDeviceService = new GPWUserDeviceService();
 export const userNotificationTokenService = new GPWUserNotificationTokenService();
 export const userNotificationService = new GPWUserNotificationService();

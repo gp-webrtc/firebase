@@ -29,7 +29,7 @@ export type {
 export type { GPWCoreStatus, GPWCoreStatusCommon } from './documents/core_status.model';
 export type { GPWUser } from './documents/user.model';
 export type { GPWUserCall } from './documents/user_call.model';
-export type { GPWUserDevice } from './documents/user_device.model';
+// export type { GPWUserDevice } from './documents/user_device.model';
 export type {
     GPWUserNotificationToken,
     GPWUserNotificationTokenCommon,
@@ -41,7 +41,7 @@ export type { GPWUserNotificationTokenDeleteBody } from './functions/user_notifi
 export type { GPWUserNotificationTokenInsertOrUpdateBody } from './functions/user_notification_token_insert_or_update_body.model';
 
 export type { GPWSupportedLanguage } from './shared/supported_language.model';
-export type { GPWUserDeviceType } from './shared/user_user_device_type.model';
+export type { GPWUserDeviceType } from './shared/user_device_type.model';
 export type { GPWUserNotificationDeviceToken } from './shared/user_notification_device_token.model';
 export type { GPWUserNotificationMetadata } from './shared/user_notification_metadata.model';
 export type { GPWUserNotificationOptions } from './shared/user_notification_options.model';

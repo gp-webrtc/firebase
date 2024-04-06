@@ -34,8 +34,8 @@ export class GPWUserService {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async create(
         userId: string,
-        encrypted: string,
-        isEncrypted: boolean,
+        // encrypted: string,
+        // isEncrypted: boolean,
         settings: GPWUserSettings,
         modelVersion: GPWCoreModelVersion
     ) {
@@ -46,8 +46,8 @@ export class GPWUserService {
         const user: GPWUser = {
             // modelVersion: modelVersion,
             userId: userId,
-            isEncrypted: isEncrypted,
-            encrypted: encrypted,
+            // isEncrypted: isEncrypted,
+            // encrypted: encrypted,
             settings: settings,
             modelVersion: modelVersion,
             creationDate: ts,

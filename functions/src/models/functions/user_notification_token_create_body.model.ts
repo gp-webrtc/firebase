@@ -20,20 +20,9 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import { Timestamp } from 'firebase-admin/firestore';
-import { GPWUserNotificationType } from '..';
-
-export type GPWUserNotification = {
+export type GPWUserNotificationCreateBody = {
     userId: string;
-    notificationId: string;
-    type: GPWUserNotificationType;
-    payload:
-        | { path: string }
-        | { callId: string; callerId: string; displayName: string }
-        | { encryptedPayload: string };
-    uuid: string;
-    wasRead: boolean;
-    wasReceived: boolean;
-    creationDate: Timestamp;
-    modificationDate: Timestamp;
+    callId: string;
+    encryptedCategoryIdentifier: string;
+    encryptedPayload: string;
 };
