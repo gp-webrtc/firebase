@@ -22,7 +22,7 @@
 
 import { Timestamp } from 'firebase-admin/firestore';
 
-import { GPWUserDeviceType } from '../shared/user_user_device_type.model';
+import { GPWUserDeviceType } from '../shared/user_device_type.model';
 import { GPWUserNotificationDeviceToken } from '../shared/user_notification_device_token.model';
 
 type GPWUserNotificationTokenCommon_0_1_0_1 = {

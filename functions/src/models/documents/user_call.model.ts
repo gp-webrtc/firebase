@@ -27,6 +27,11 @@ export type GPWUserCall = {
     callId: string;
     callerId: string;
     displayName: string;
+    localCallId: string;
+    sdp: {
+        caller: string;
+        received?: string;
+    };
     creationDate: Timestamp;
     modificationDate: Timestamp;
 };

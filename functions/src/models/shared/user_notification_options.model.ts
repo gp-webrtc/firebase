@@ -20,19 +20,30 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import { Notification } from 'firebase-admin/messaging';
+// import { Notification } from 'firebase-admin/messaging';
 
-import { GPWUserDevice } from '../documents/user_device.model';
+// import { GPWUserDevice } from '../documents/user_device.model';
 
-type GPWUserNotificationOnDeviceAddedOptions = {
-    type: 'userDeviceAdded';
-    data: GPWUserDevice;
-    notification: Notification;
-};
+// type GPWUserNotificationOnDeviceAddedOptions = {
+//     type: 'userDeviceAdded';
+//     data: GPWUserDevice;
+//     notification: Notification;
+// };
 
 type GPWUserNotificationCallOptions = {
-    type: /* 'call' | */ 'userCallReceived';
-    data: { callId: string; callerId: string; displayName: string };
+    type: 'call' | 'userCallReceived';
+    data: { callId: string; callerId: string; displayName: string; sdp: string };
 };
 
-export type GPWUserNotificationOptions = GPWUserNotificationOnDeviceAddedOptions | GPWUserNotificationCallOptions;
+type GPWUserEncryptedNotification = {
+    type: 'userEncrypted';
+    data: {
+        callId: string;
+        encryptedCategoryIdentifier: string;
+        encryptedPayload: string;
+    };
+};
+
+export type GPWUserNotificationOptions =
+    // | GPWUserNotificationOnDeviceAddedOptions
+    GPWUserNotificationCallOptions | GPWUserEncryptedNotification;

@@ -22,53 +22,53 @@
 
 // import { Change, DocumentSnapshot, FirestoreEvent, QueryDocumentSnapshot } from 'firebase-functions/v2/firestore';
 
-// import { userDeviceService } from '../services';
-// import { GPWUserDevice } from '../models';
+// import { userFriendService } from '../services';
+// import { GPWUserFriend } from '../models';
 // import { userNotificationController } from '.';
 
-// export class GPWUserDeviceController {
-//     async onDocumentCreated(event: FirestoreEvent<DocumentSnapshot | undefined, { userId: string; deviceId: string }>) {
+// export class GPWUserFriendController {
+//     async onDocumentCreated(event: FirestoreEvent<DocumentSnapshot | undefined, { userId: string; friendId: string }>) {
 //         if (event.data) {
 //             const userId = event.params.userId;
 
-//             const device = event.data.data() as GPWUserDevice;
+//             const friend = event.data.data() as GPWUserFriend;
 
 //             userNotificationController.send(userId, {
-//                 type: 'userDeviceAdded',
+//                 type: 'userFriendAdded',
 //                 notification: {
-//                     title: 'New device added',
-//                     body: 'A new device has been added to your account',
+//                     title: 'New friend added',
+//                     body: 'A new friend has been added to your account',
 //                 },
-//                 data: device,
+//                 data: friend,
 //             });
 //         }
 //     }
 
 //     async onDocumentUpdated(
-//         event: FirestoreEvent<Change<QueryDocumentSnapshot> | undefined, { userId: string; deviceId: string }>
+//         event: FirestoreEvent<Change<QueryDocumentSnapshot> | undefined, { userId: string; friendId: string }>
 //     ) {
 //         if (event.data) {
 //             const userId = event.params.userId;
-//             const deviceId = event.params.deviceId;
-//             const before = event.data.before.data() as GPWUserDevice;
-//             const after = event.data.before.data() as GPWUserDevice;
+//             const friendId = event.params.friendId;
+//             const before = event.data.before.data() as GPWUserFriend;
+//             const after = event.data.before.data() as GPWUserFriend;
 //             after.modificationDate = before.modificationDate;
 
 //             if (before.encrypted !== after.encrypted || before.isEncrypted !== after.isEncrypted) {
-//                 await userDeviceService.updateModificationDate(userId, deviceId);
+//                 await userFriendService.updateModificationDate(userId, friendId);
 //             }
 //         }
 //     }
 
-//     // async onDocumentDeleted(event: FirestoreEvent<DocumentSnapshot | undefined, { userId: string; deviceId: string }>) {
+//     // async onDocumentDeleted(event: FirestoreEvent<DocumentSnapshot | undefined, { userId: string; friendId: string }>) {
 //     //     if (event.data) {
 //     //         const userId = event.params.userId;
 
-//     //         const device = event.data.data() as GPWUserDevice;
+//     //         const friend = event.data.data() as GPWUserFriend;
 
 //     //         userNotificationController.send(userId, {
-//     //             type: 'onDeviceRemoved',
-//     //             data: device,
+//     //             type: 'onFriendRemoved',
+//     //             data: friend,
 //     //         });
 //     //     }
 //     // }

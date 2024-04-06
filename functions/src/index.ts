@@ -28,12 +28,12 @@ import {
     coreController,
     httpController,
     userController,
-    userDeviceController,
+    // userDeviceController,
     userNotificationTokenController,
     userNotificationController,
 } from './controllers';
 import { onCall, onRequest } from 'firebase-functions/v2/https';
-import { onDocumentCreated, onDocumentUpdated } from 'firebase-functions/v2/firestore';
+import { onDocumentCreated, onDocumentDeleted, onDocumentUpdated } from 'firebase-functions/v2/firestore';
 import { setGlobalOptions } from 'firebase-functions/v2/options';
 
 // Initialize firebase App
@@ -59,12 +59,13 @@ export const core = {
 
 export const user = {
     // User documents
-    // onCreated: onDocumentCreated('/users/{userId}', userController.onDocumentCreated),
+    onCreated: onDocumentCreated('/users/{userId}', userController.onDocumentCreated),
     onUpdated: onDocumentUpdated('/users/{userId}', userController.onDocumentUpdated),
+    onDeleted: onDocumentDeleted('/users/{userId}', userController.onDocumentDeleted),
 
-    // User Device documents
-    onDeviceCreated: onDocumentCreated('users/{userId}/devices/{deviceId}', userDeviceController.onDocumentCreated),
-    onDeviceUpdated: onDocumentUpdated('users/{userId}/devices/{deviceId}', userDeviceController.onDocumentUpdated),
+    // // User Device documents
+    // onDeviceCreated: onDocumentCreated('users/{userId}/devices/{deviceId}', userDeviceController.onDocumentCreated),
+    // onDeviceUpdated: onDocumentUpdated('users/{userId}/devices/{deviceId}', userDeviceController.onDocumentUpdated),
 
     // User notification token callable functions
     insertOrUpdateNotificationToken: onCall(
@@ -76,7 +77,11 @@ export const user = {
         userNotificationTokenController.onDeleteFunctionCalled
     ),
 
-    // User notification documents
+    // User notifications
+    sendEncryptedNotification: onCall(
+        { region: 'europe-west3', enforceAppCheck: enforceAppCheck },
+        userNotificationController.onSendEncryptedNotificationCalled
+    ),
     onNotificationUpdated: onDocumentUpdated(
         'users/{userId}/notifications/{notificationId}',
         userNotificationController.onDocumentUpdated

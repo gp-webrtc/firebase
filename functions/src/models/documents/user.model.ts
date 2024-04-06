@@ -25,9 +25,9 @@ import { GPWUserSettings } from '../shared/user_settings.model';
 
 type GPSUser_1 = {
     userId: string;
-    isEncrypted: boolean;
+    // isEncrypted: boolean;
     settings: GPWUserSettings;
-    encrypted: string;
+    // encrypted: string;
     creationDate: Timestamp;
     modificationDate: Timestamp;
     modelVersion: '1';

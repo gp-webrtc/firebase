@@ -23,14 +23,14 @@
 import { GPWAuthController } from './auth.controller';
 import { GPWCoreController } from './core.controller';
 import { GPWUserController } from './user.controller';
-import { GPWUserDeviceController } from './user_device.controller';
+// import { GPWUserDeviceController } from './user_device.controller';
 import { GPWUserNotificationTokenController } from './user_notification_token.controller';
 import { GPWUserNotificationController } from './user_notification.controller';
 
 export const authController = new GPWAuthController();
 export const coreController = new GPWCoreController();
 export const userController = new GPWUserController();
-export const userDeviceController = new GPWUserDeviceController();
+// export const userDeviceController = new GPWUserDeviceController();
 export const userNotificationTokenController = new GPWUserNotificationTokenController();
 export const userNotificationController = new GPWUserNotificationController();
 

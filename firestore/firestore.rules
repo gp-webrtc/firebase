@@ -32,56 +32,59 @@ service cloud.firestore {
 
         // Verifies that the user creation is valid
         function isValidUserCreation() {
-            return request.resource.data.keys().hasOnly(['userId', 'encrypted', 'settings', 'isEncrypted', 'modelVersion', 'creationDate', 'modificationDate']) &&
+            return request.resource.data.keys().hasOnly(['userId', 'settings', 'modelVersion', 'creationDate', 'modificationDate']) &&
                    request.resource.data.userId == request.auth.uid &&
-                   request.resource.data.encrypted is string &&
-                   request.resource.data.isEncrypted is bool &&
                    request.resource.data.modelVersion is string && 
                    request.resource.data.settings.keys().hasOnly(['notifications']) &&
-                   request.resource.data.settings.notifications.keys().hasOnly(['isEnabled', 'onDeviceAdded']) &&
-                   request.resource.data.settings.notifications.isEnabled is bool &&
-                   request.resource.data.settings.notifications.onDeviceAdded is bool;
+                   request.resource.data.settings.notifications.keys().hasOnly(['isEnabled']) &&
+                   request.resource.data.settings.notifications.isEnabled is bool;
         }
 
         // Verifies that the user creation is valid
         function isValidUserUpdate() {
-            return isValidUserEncryptedDataUpdate() || isValidUserSetingsUpdate();
+            // return isValidUserEncryptedDataUpdate() || isValidUserSetingsUpdate();
+            return isValidUserSetingsUpdate()
         }
 
-        function isValidUserEncryptedDataUpdate() {
-            return request.resource.data.userId == request.auth.uid &&
-                   request.resource.data.diff(resource.data).affectedKeys().hasOnly(['encrypted', 'isEncrypted']) &&
-                   request.resource.data.encrypted is string &&
-                   request.resource.data.isEncrypted is bool;
-        }
+        // function isValidUserEncryptedDataUpdate() {
+        //     return request.resource.data.userId == request.auth.uid &&
+        //            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['encrypted', 'isEncrypted']) &&
+        //            request.resource.data.encrypted is string &&
+        //            request.resource.data.isEncrypted is bool;
+        // }
 
         function isValidUserSetingsUpdate() {
             return request.resource.data.userId == request.auth.uid &&
                    request.resource.data.diff(resource.data).affectedKeys().hasOnly(['settings']) &&
                    request.resource.data.settings.diff(resource.data.settings).affectedKeys().hasOnly(['notifications']) &&
-                   request.resource.data.settings.notifications.diff(resource.data.settings.notifications).affectedKeys().hasOnly(['isEnabled', 'onDeviceAdded']) &&
-                   request.resource.data.settings.notifications.isEnabled is bool &&
-                   request.resource.data.settings.notifications.onMessageReceived is bool &&
-                   request.resource.data.settings.notifications.onDeviceAdded is bool &&
-                   request.resource.data.settings.notifications.onDeviceRemoved is bool;
+                   request.resource.data.settings.notifications.diff(resource.data.settings.notifications).affectedKeys().hasOnly(['isEnabled']) &&
+                   request.resource.data.settings.notifications.isEnabled is bool
         }
 
-        function isValidUserDeviceCreation(deviceId) {
-            return request.resource.data.userId == request.auth.uid &&
-                   request.resource.data.deviceId == deviceId &&
-                   request.resource.data.keys().hasOnly(['userId', 'deviceId', 'encrypted', 'isEncrypted', 'creationDate', 'modificationDate']) &&
-                   request.resource.data.isEncrypted is bool &&
-                   request.resource.data.encrypted is string;
-        }
+        // function isValidUserDeviceCreation(deviceId) {
+        //     return request.resource.data.userId == request.auth.uid &&
+        //            request.resource.data.deviceId == deviceId &&
+        //            request.resource.data.keys().hasOnly(['userId', 'deviceId', 'encrypted', 'isEncrypted', 'creationDate', 'modificationDate']) &&
+        //            request.resource.data.isEncrypted is bool &&
+        //            request.resource.data.encrypted is string;
+        // }
 
-        function isValidUserNotificationUpdate() {
-            return request.resource.data.userId == request.auth.uid &&
-                   (    ( request.resource.data.diff(resource.data).affectedKeys().hasOnly(['wasRead']) &&
-                          request.resource.data.isUnread == true ) || 
-                        ( request.resource.data.diff(resource.data).affectedKeys().hasOnly(['wasReceived']) &&
-                          request.resource.data.isUnread == true ) 
-                   );
-        }
+        // function isValidUserFriendCreation(friendId) {
+        //     return request.resource.data.userId == request.auth.uid &&
+        //            request.resource.data.friendId == friendId &&
+        //            request.resource.data.keys().hasOnly(['userId', 'friendId', 'encrypted', 'isEncrypted', 'creationDate', 'modificationDate']) &&
+        //            request.resource.data.isEncrypted is bool &&
+        //            request.resource.data.encrypted is string;
+        // }
+
+        // function isValidUserNotificationUpdate() {
+        //     return request.resource.data.userId == request.auth.uid &&
+        //            (    ( request.resource.data.diff(resource.data).affectedKeys().hasOnly(['wasRead']) &&
+        //                   request.resource.data.isUnread == true ) || 
+        //                 ( request.resource.data.diff(resource.data).affectedKeys().hasOnly(['wasReceived']) &&
+        //                   request.resource.data.isUnread == true ) 
+        //            );
+        // }
 
         // For all documents
         match /{document=**} {
@@ -115,19 +118,26 @@ service cloud.firestore {
             allow update: if (isUser(userId) && isValidUserUpdate());
             allow delete: if false;
 
-            // User devices documents
-            match /devices/{deviceId}  {
-                allow read, delete: if isUser(userId);
-                allow create: if isUser(userId) && isValidUserDeviceCreation(deviceId);
-                allow update: if false;
-            }
+            // // User devices documents
+            // match /devices/{deviceId}  {
+            //     allow read, delete: if isUser(userId);
+            //     allow create: if isUser(userId) && isValidUserDeviceCreation(deviceId);
+            //     allow update: if isUser(userId) && isValidUserEncryptedDataUpdate();
+            // }
 
-            // User notifications dociments
-            match /notifications/{notificationId} {
-                allow read, delete: if isUser(userId);
-                allow update: if isUser(userId) && isValidUserNotificationUpdate();
-                allow create: if false;
-            }
+            // // User devices documents
+            // match /friends/{friendId}  {
+            //     allow read, delete: if isUser(userId);
+            //     allow create: if isUser(userId) && isValidUserFriendCreation(friendId);
+            //     allow update: if false;
+            // }
+
+            // // User notifications dociments
+            // match /notifications/{notificationId} {
+            //     allow read, delete: if isUser(userId);
+            //     allow update: if isUser(userId) && isValidUserNotificationUpdate();
+            //     allow create: if false;
+            // }
 
             // User notification token documents
             match /notificationTokens/{tokenId}  {
