@@ -81,16 +81,16 @@ httpController.post('/users/:userId/userCallReceived', async (req, res) => {
             userId,
             userId,
             '21635e00-06ca-4478-9039-05e871b4324b',
-            'John Doe',
+            'The postman',
             'test SDP'
         );
 
         await userNotificationController.send(userId, {
             type: 'userCallReceived',
             data: {
-                callId,
+                callId: '21635e00-06ca-4478-9039-05e871b4324b',
                 callerId: userId,
-                displayName: 'John Doe',
+                displayName: 'The postman',
                 sdp: 'Test SDP',
             },
         });
