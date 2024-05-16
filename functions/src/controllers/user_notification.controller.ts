@@ -21,13 +21,13 @@
 //
 
 import { Change, FirestoreEvent, QueryDocumentSnapshot } from 'firebase-functions/v2/firestore';
+import { Notification } from '@parse/node-apn';
 
 import { userNotificationMetadata } from '../data';
 import { GPWUserNotification, GPWUserNotificationOptions } from '../models';
 import { apnsService, fcmService, userNotificationTokenService, userNotificationService } from '../services';
-import { Notification } from '@parse/node-apn';
 import { CallableRequest, HttpsError } from 'firebase-functions/v2/https';
-import { GPWUserNotificationCreateBody } from 'src/models/functions/user_notification_token_create_body.model';
+import { GPWUserNotificationCreateBody } from '../models/functions/user_notification_create_body.model';
 import { userNotificationController } from '.';
 
 export class GPWUserNotificationController {
