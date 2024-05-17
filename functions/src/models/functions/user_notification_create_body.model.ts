@@ -21,8 +21,6 @@
 //
 
 export type GPWUserNotificationCreateBody = {
-    userId: string;
-    callId: string;
     encryptedCategoryIdentifier: string;
     encryptedPayload: string;
-};
+} & ({ userId: string } | { userIds: string[] });
