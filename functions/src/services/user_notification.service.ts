@@ -80,7 +80,7 @@ export class GPWUserNotificationService {
 
     documentData(options: GPWUserNotificationOptions): // | { path: string }
     | { callId: string; callerId: string; displayName: string }
-        | { callId: string; encryptedCategoryIdentifier: string; encryptedPayload: string } {
+        | { encryptedCategoryIdentifier: string; encryptedPayload: string } {
         switch (options.type) {
             case 'userCallReceived':
                 return {
