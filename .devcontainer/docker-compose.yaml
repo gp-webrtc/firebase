@@ -35,29 +35,29 @@ services:
       - gp-webrtc-firebase-home:/home
     networks:
       - gp-webrtc-devenv-net
-  gp-webrtc-coturn:
-    container_name: gp-webrtc-coturn
-    image: coturn/coturn:4
-    network_mode: 'host'
-    expose:
-      - '3478'
-      # - '5349'
-    logging:
-      driver: 'json-file'
-      options:
-        max-size: '200k'
-        max-file: '10'
-    volumes:
-      - ./turnserver.conf:/etc/coturn/turnserver.conf:ro
-      - gp-webrtc-firebase-coturn:/var/lib
-      # - /etc/localtime:/etc/localtime:ro
-      # - /etc/timezone:/etc/timezone:ro
+  # gp-webrtc-coturn:
+  #   container_name: gp-webrtc-coturn
+  #   image: coturn/coturn:4
+  #   network_mode: 'host'
+  #   expose:
+  #     - '3478'
+  #     # - '5349'
+  #   logging:
+  #     driver: 'json-file'
+  #     options:
+  #       max-size: '200k'
+  #       max-file: '10'
+  #   volumes:
+  #     - ./turnserver.conf:/etc/coturn/turnserver.conf:ro
+  #     - gp-webrtc-firebase-coturn:/var/lib
+  #     # - /etc/localtime:/etc/localtime:ro
+  #     # - /etc/timezone:/etc/timezone:ro
 
 volumes:
   gp-webrtc-firebase-home:
     name: gp-webrtc-firebase-home
-  gp-webrtc-firebase-coturn:
-    name: gp-webrtc-firebase-coturn
+  # gp-webrtc-firebase-coturn:
+  #   name: gp-webrtc-firebase-coturn
 
 networks:
   gp-webrtc-devenv-net:
