@@ -57,7 +57,7 @@ export class GPWUserNotificationController {
             throw new HttpsError('failed-precondition', 'The function must be called from an App Check verified app.');
         }
 
-        // const userId = request.auth?.uid;
+        const userId = request.auth?.uid;
         const body = request.data;
 
         if (body) {
@@ -71,27 +71,29 @@ export class GPWUserNotificationController {
                 });
             } else {
                 if (body.userIds.length > 0) {
-                    for (const userId of body.userIds) {
-                        await userNotificationController.send(userId, {
-                            type: 'userEncrypted',
-                            data: {
-                                encryptedCategoryIdentifier: body.encryptedCategoryIdentifier,
-                                encryptedPayload: body.encryptedPayload,
-                            },
-                        });
+                    for (const targetUserId of body.userIds) {
+                        if (userId != targetUserId) {
+                            await userNotificationController.send(targetUserId, {
+                                type: 'userEncrypted',
+                                data: {
+                                    encryptedCategoryIdentifier: body.encryptedCategoryIdentifier,
+                                    encryptedPayload: body.encryptedPayload,
+                                },
+                            });
+                        }
                     }
                 } else {
                     const users = await userService.getAll();
                     for (const user of users) {
-                        // if (user.userId != userId) {
-                        await userNotificationController.send(user.userId, {
-                            type: 'userEncrypted',
-                            data: {
-                                encryptedCategoryIdentifier: body.encryptedCategoryIdentifier,
-                                encryptedPayload: body.encryptedPayload,
-                            },
-                        });
-                        // }
+                        if (user.userId != userId) {
+                            await userNotificationController.send(user.userId, {
+                                type: 'userEncrypted',
+                                data: {
+                                    encryptedCategoryIdentifier: body.encryptedCategoryIdentifier,
+                                    encryptedPayload: body.encryptedPayload,
+                                },
+                            });
+                        }
                     }
                 }
             }
