@@ -31,6 +31,14 @@ export class GPWUserService {
         return (await db.collection('/users').doc(userId).get())?.data() as GPWUser;
     }
 
+    async getAll(): Promise<GPWUser[]> {
+        const db = firestore();
+        const result = await db.collection('/users').get();
+        return result.docs.map((doc) => {
+            return doc.data() as GPWUser;
+        });
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async create(
         userId: string,

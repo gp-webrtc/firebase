@@ -52,7 +52,13 @@ export class GPWAPNSService {
         environment: 'development' | 'production'
     ) {
         logger.debug(notification);
-        if (process.env.GPW_APNS_KEY_DEV && process.env.GPW_APNS_KEY_ID_DEV && process.env.GPW_APNS_TEAM_ID) {
+        if (
+            process.env.GPW_APNS_KEY &&
+            process.env.GPW_APNS_KEY_ID &&
+            process.env.GPW_APNS_KEY_DEV &&
+            process.env.GPW_APNS_KEY_ID_DEV &&
+            process.env.GPW_APNS_TEAM_ID
+        ) {
             const key = Buffer.from(
                 (environment === 'development' ? process.env.GPW_APNS_KEY_DEV : process.env.GPW_APNS_KEY) as string,
                 'base64'
@@ -89,7 +95,11 @@ export class GPWAPNSService {
                 }
             }
         } else {
-            logger.error('APN token and/or APN url are missing');
+            if (!process.env.GPW_APNS_KEY) logger.error('APNS key (prod) is missing');
+            if (!process.env.GPW_APNS_KEY_ID) logger.error('APNS key ID (prod) is missing');
+            if (!process.env.GPW_APNS_KEY_DEV) logger.error('APNS key (dev) is missing');
+            if (!process.env.GPW_APNS_KEY_ID_DEV) logger.error('APNS key ID (dev) is missing');
+            if (!process.env.GPW_APNS_TEAM_ID) logger.error('APNS team id is missing');
         }
     }
 
