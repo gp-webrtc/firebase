@@ -38,7 +38,6 @@ type GPWUserNotificationCallOptions = {
 type GPWUserEncryptedNotification = {
     type: 'userEncrypted';
     data: {
-        callId: string;
         encryptedCategoryIdentifier: string;
         encryptedPayload: string;
     };

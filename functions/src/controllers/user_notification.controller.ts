@@ -25,7 +25,13 @@ import { Notification } from '@parse/node-apn';
 
 import { userNotificationMetadata } from '../data';
 import { GPWUserNotification, GPWUserNotificationOptions } from '../models';
-import { apnsService, fcmService, userNotificationTokenService, userNotificationService } from '../services';
+import {
+    apnsService,
+    fcmService,
+    userNotificationTokenService,
+    userNotificationService,
+    userService,
+} from '../services';
 import { CallableRequest, HttpsError } from 'firebase-functions/v2/https';
 import { GPWUserNotificationCreateBody } from '../models/functions/user_notification_create_body.model';
 import { userNotificationController } from '.';
@@ -51,21 +57,43 @@ export class GPWUserNotificationController {
             throw new HttpsError('failed-precondition', 'The function must be called from an App Check verified app.');
         }
 
-        const userId = request.auth?.uid;
+        // const userId = request.auth?.uid;
         const body = request.data;
 
         if (body) {
-            if (userId) {
+            if ('userId' in body) {
                 await userNotificationController.send(body.userId, {
                     type: 'userEncrypted',
                     data: {
-                        callId: body.callId,
                         encryptedCategoryIdentifier: body.encryptedCategoryIdentifier,
                         encryptedPayload: body.encryptedPayload,
                     },
                 });
             } else {
-                throw new HttpsError('unauthenticated', 'You must be authenticated to use this function');
+                if (body.userIds.length > 0) {
+                    for (const userId of body.userIds) {
+                        await userNotificationController.send(userId, {
+                            type: 'userEncrypted',
+                            data: {
+                                encryptedCategoryIdentifier: body.encryptedCategoryIdentifier,
+                                encryptedPayload: body.encryptedPayload,
+                            },
+                        });
+                    }
+                } else {
+                    const users = await userService.getAll();
+                    for (const user of users) {
+                        // if (user.userId != userId) {
+                        await userNotificationController.send(user.userId, {
+                            type: 'userEncrypted',
+                            data: {
+                                encryptedCategoryIdentifier: body.encryptedCategoryIdentifier,
+                                encryptedPayload: body.encryptedPayload,
+                            },
+                        });
+                        // }
+                    }
+                }
             }
         } else {
             throw new HttpsError('invalid-argument', 'Wrong body structure');
@@ -181,7 +209,7 @@ export class GPWUserNotificationController {
                     notification.topic = metadata.apns.topic;
                     notification.expiry = Math.floor(Date.now() / 1000) + (metadata.apns.expiration ?? 0);
                     notification.priority = metadata.apns.priority ?? 10;
-                    notification.collapseId = options.data.callId;
+                    // notification.collapseId = options.data.collapseId;
                     notification.mutableContent = true;
                     notification.aps.category = 'org.gpfister.republik.encrypted';
                     notification.aps.alert = {
