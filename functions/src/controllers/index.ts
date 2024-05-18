@@ -34,4 +34,4 @@ export const userController = new GPWUserController();
 export const userNotificationTokenController = new GPWUserNotificationTokenController();
 export const userNotificationController = new GPWUserNotificationController();
 
-export { httpController } from '../controllers/http.controller';
+// export { httpController } from '../controllers/http.controller';

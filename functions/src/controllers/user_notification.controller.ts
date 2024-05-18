@@ -190,9 +190,7 @@ export class GPWUserNotificationController {
                     };
                     notification.payload = {
                         encryptedCategoryIdentifier: Buffer.from(metadata.apns.category, 'utf8').toString('base64'),
-                        encryptedPayload: Buffer.from(JSON.stringify({ userInfo: options.data }), 'utf8').toString(
-                            'base64'
-                        ),
+                        encryptedPayload: Buffer.from(JSON.stringify({ ...options.data }), 'utf8').toString('base64'),
                     };
                     await apnsService.send(userId, apnsTokens, notification);
                 }
