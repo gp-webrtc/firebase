@@ -26,13 +26,13 @@ import * as functions from 'firebase-functions';
 import {
     authController,
     coreController,
-    httpController,
+    // httpController,
     userController,
     // userDeviceController,
     userNotificationTokenController,
     userNotificationController,
 } from './controllers';
-import { onCall, onRequest } from 'firebase-functions/v2/https';
+import { onCall /*, onRequest*/ } from 'firebase-functions/v2/https';
 import { onDocumentCreated, onDocumentDeleted, onDocumentUpdated } from 'firebase-functions/v2/firestore';
 import { setGlobalOptions } from 'firebase-functions/v2/options';
 
@@ -92,9 +92,9 @@ export const user = {
     ),
 };
 
-export const test = {
-    http: onRequest(
-        { secrets: ['GPW_APNS_KEY', 'GPW_APNS_KEY_DEV', 'GPW_APNS_KEY_ID', 'GPW_APNS_KEY_ID_DEV', 'GPW_APNS_TEAM_ID'] },
-        httpController
-    ),
-};
+// export const test = {
+//     http: onRequest(
+//         { secrets: ['GPW_APNS_KEY', 'GPW_APNS_KEY_DEV', 'GPW_APNS_KEY_ID', 'GPW_APNS_KEY_ID_DEV', 'GPW_APNS_TEAM_ID'] },
+//         httpController
+//     ),
+// };
