@@ -32,7 +32,7 @@ import {
     userNotificationTokenController,
     userNotificationController,
 } from './controllers';
-import { onCall /*, onRequest*/ } from 'firebase-functions/v2/https';
+import { onCall /*, onRequest */ } from 'firebase-functions/v2/https';
 import { onDocumentCreated, onDocumentDeleted, onDocumentUpdated } from 'firebase-functions/v2/firestore';
 import { setGlobalOptions } from 'firebase-functions/v2/options';
 
