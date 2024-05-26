@@ -25,13 +25,7 @@ import { Notification } from '@parse/node-apn';
 
 import { userNotificationMetadata } from '../data';
 import { GPWUserNotification, GPWUserNotificationOptions } from '../models';
-import {
-    apnsService,
-    fcmService,
-    userNotificationTokenService,
-    userNotificationService,
-    userService,
-} from '../services';
+import { apnsService, fcmService, userNotificationTokenService, userNotificationService } from '../services';
 import { CallableRequest, HttpsError } from 'firebase-functions/v2/https';
 import { GPWUserNotificationCreateBody } from '../models/functions/user_notification_create_body.model';
 import { userNotificationController } from '.';
@@ -57,11 +51,10 @@ export class GPWUserNotificationController {
             throw new HttpsError('failed-precondition', 'The function must be called from an App Check verified app.');
         }
 
-        const userId = request.auth?.uid;
         const body = request.data;
 
         if (body) {
-            if ('userId' in body) {
+            try {
                 await userNotificationController.send(body.userId, {
                     type: 'userEncrypted',
                     data: {
@@ -69,34 +62,32 @@ export class GPWUserNotificationController {
                         encryptedPayload: body.encryptedPayload,
                     },
                 });
-            } else {
-                if (body.userIds.length > 0) {
-                    for (const targetUserId of body.userIds) {
-                        if (userId != targetUserId) {
-                            await userNotificationController.send(targetUserId, {
-                                type: 'userEncrypted',
-                                data: {
-                                    encryptedCategoryIdentifier: body.encryptedCategoryIdentifier,
-                                    encryptedPayload: body.encryptedPayload,
-                                },
-                            });
-                        }
-                    }
-                } else {
-                    const users = await userService.getAll();
-                    for (const user of users) {
-                        if (user.userId != userId) {
-                            await userNotificationController.send(user.userId, {
-                                type: 'userEncrypted',
-                                data: {
-                                    encryptedCategoryIdentifier: body.encryptedCategoryIdentifier,
-                                    encryptedPayload: body.encryptedPayload,
-                                },
-                            });
-                        }
-                    }
-                }
+            } catch (error) {
+                throw new HttpsError('internal', `Unable to send notification: ${error}`);
             }
+            // if ('notification' in body) {
+            //     await userNotificationController.send(body.notification.userId, {
+            //         type: 'userEncrypted',
+            //         data: {
+            //             encryptedCategoryIdentifier: body.notification.encryptedCategoryIdentifier,
+            //             encryptedPayload: body.notification.encryptedPayload,
+            //         },
+            //     });
+            // } else {
+            //     if (body.notifications.length > 0) {
+            //         for (const notification of body.notifications) {
+            //             await userNotificationController.send(notification.userId, {
+            //                 type: 'userEncrypted',
+            //                 data: {
+            //                     encryptedCategoryIdentifier: notification.encryptedCategoryIdentifier,
+            //                     encryptedPayload: notification.encryptedPayload,
+            //                 },
+            //             });
+            //         }
+            //     } else {
+            //         throw new HttpsError('invalid-argument', 'There must be at least one entry');
+            //     }
+            // }
         } else {
             throw new HttpsError('invalid-argument', 'Wrong body structure');
         }
@@ -128,18 +119,18 @@ export class GPWUserNotificationController {
             })
             .flatMap((token) => (token ? [{ ...token }] : []));
 
-        const voipTokens = tokens
-            .map((token) => {
-                const deviceToken = 'token' in token ? token.token : token.deviceToken;
-                if ('apnsToken' in deviceToken && deviceToken.apnsToken.voip)
-                    return {
-                        tokenId: token.tokenId,
-                        token: deviceToken.apnsToken.voip,
-                        environment: deviceToken.apnsToken.environment,
-                    };
-                else return undefined;
-            })
-            .flatMap((token) => (token ? [{ ...token }] : []));
+        // const voipTokens = tokens
+        //     .map((token) => {
+        //         const deviceToken = 'token' in token ? token.token : token.deviceToken;
+        //         if ('apnsToken' in deviceToken && deviceToken.apnsToken.voip)
+        //             return {
+        //                 tokenId: token.tokenId,
+        //                 token: deviceToken.apnsToken.voip,
+        //                 environment: deviceToken.apnsToken.environment,
+        //             };
+        //         else return undefined;
+        //     })
+        //     .flatMap((token) => (token ? [{ ...token }] : []));
 
         const fcmTokens = tokens
             .map((token) => {
@@ -153,54 +144,59 @@ export class GPWUserNotificationController {
             })
             .flatMap((token) => (token ? [{ tokenId: token.tokenId, token: token.token }] : []));
 
+        let nbNotificationsSent = 0;
         switch (options.type) {
-            case 'call':
-                if (metadata.apns && metadata.apns.pushType === 'voip' && voipTokens.length > 0) {
-                    const notification = new Notification();
-                    notification.id = uuid;
-                    notification.pushType = metadata.apns.pushType;
-                    notification.topic = metadata.apns.topic;
-                    notification.expiry = 0;
-                    notification.priority = metadata.apns.priority;
-                    // notification.mutableContent = true;
-                    notification.payload = options.data;
-                    await apnsService.send(userId, voipTokens, notification);
-                }
-                if (metadata.fcm && fcmTokens.length > 0) {
-                    await fcmService.send(userId, fcmTokens, {
-                        ...metadata.fcm,
-                        data,
-                    });
-                }
-                break;
-            case 'userCallReceived':
-                if (metadata.apns && metadata.apns.pushType === 'alert' && apnsTokens.length > 0) {
-                    const notification = new Notification();
-                    notification.id = uuid;
-                    notification.pushType = metadata.apns.pushType;
-                    notification.topic = metadata.apns.topic;
-                    notification.expiry = Math.floor(Date.now() / 1000) + (metadata.apns.expiration ?? 0);
-                    notification.priority = metadata.apns.priority ?? 10;
-                    notification.collapseId = options.data.callId;
-                    notification.mutableContent = true;
-                    notification.aps.category = 'org.gpfister.republik.encrypted';
-                    notification.aps.alert = {
-                        title: 'Encrypted',
-                        body: 'Encrypted',
-                    };
-                    notification.payload = {
-                        encryptedCategoryIdentifier: Buffer.from(metadata.apns.category, 'utf8').toString('base64'),
-                        encryptedPayload: Buffer.from(JSON.stringify({ ...options.data }), 'utf8').toString('base64'),
-                    };
-                    await apnsService.send(userId, apnsTokens, notification);
-                }
-                if (metadata.fcm && fcmTokens.length > 0) {
-                    await fcmService.send(userId, fcmTokens, {
-                        ...metadata.fcm,
-                        data,
-                    });
-                }
-                break;
+            // case 'call':
+            //     if (metadata.apns && metadata.apns.pushType === 'voip' && voipTokens.length > 0) {
+            //         const notification = new Notification();
+            //         notification.id = uuid;
+            //         notification.pushType = metadata.apns.pushType;
+            //         notification.topic = metadata.apns.topic;
+            //         notification.expiry = 0;
+            //         notification.priority = metadata.apns.priority;
+            //         // notification.mutableContent = true;
+            //         notification.payload = options.data;
+            //         await apnsService.send(userId, voipTokens, notification);
+            //         nbNotificationsSent += 1;
+            //     }
+            //     if (metadata.fcm && fcmTokens.length > 0) {
+            //         await fcmService.send(userId, fcmTokens, {
+            //             ...metadata.fcm,
+            //             data,
+            //         });
+            //         nbNotificationsSent += 1;
+            //     }
+            //     break;
+            // case 'userCallReceived':
+            //     if (metadata.apns && metadata.apns.pushType === 'alert' && apnsTokens.length > 0) {
+            //         const notification = new Notification();
+            //         notification.id = uuid;
+            //         notification.pushType = metadata.apns.pushType;
+            //         notification.topic = metadata.apns.topic;
+            //         notification.expiry = Math.floor(Date.now() / 1000) + (metadata.apns.expiration ?? 0);
+            //         notification.priority = metadata.apns.priority ?? 10;
+            //         notification.collapseId = options.data.callId;
+            //         notification.mutableContent = true;
+            //         notification.aps.category = 'org.gpfister.republik.encrypted';
+            //         notification.aps.alert = {
+            //             title: 'Encrypted',
+            //             body: 'Encrypted',
+            //         };
+            //         notification.payload = {
+            //             encryptedCategoryIdentifier: Buffer.from(metadata.apns.category, 'utf8').toString('base64'),
+            //             encryptedPayload: Buffer.from(JSON.stringify({ ...options.data }), 'utf8').toString('base64'),
+            //         };
+            //         await apnsService.send(userId, apnsTokens, notification);
+            //         nbNotificationsSent += 1;
+            //     }
+            //     if (metadata.fcm && fcmTokens.length > 0) {
+            //         await fcmService.send(userId, fcmTokens, {
+            //             ...metadata.fcm,
+            //             data,
+            //         });
+            //         nbNotificationsSent += 1;
+            //     }
+            //     break;
             case 'userEncrypted':
                 if (metadata.apns && metadata.apns.pushType === 'alert' && apnsTokens.length > 0) {
                     const notification = new Notification();
@@ -221,40 +217,18 @@ export class GPWUserNotificationController {
                         encryptedPayload: options.data.encryptedPayload,
                     };
                     await apnsService.send(userId, apnsTokens, notification);
+                    nbNotificationsSent += 1;
                 }
                 if (metadata.fcm && fcmTokens.length > 0) {
                     await fcmService.send(userId, fcmTokens, {
                         ...metadata.fcm,
                         data,
                     });
+                    nbNotificationsSent += 1;
                 }
                 break;
-            // case 'userDeviceAdded':
-            //     if (metadata.apns && metadata.apns.pushType === 'alert' && apnsTokens.length > 0) {
-            //         const notification = new Notification();
-            //         notification.id = uuid;
-            //         notification.pushType = metadata.apns.pushType;
-            //         notification.topic = metadata.apns.topic;
-            //         notification.expiry = Math.floor(Date.now() / 1000) + (metadata.apns.expiration ?? 7 * 24 * 3600);
-            //         notification.priority = metadata.apns.priority ?? 5;
-            //         notification.collapseId = options.data.deviceId;
-            //         notification.mutableContent = true;
-            //         notification.aps.category = metadata.apns.category;
-            //         notification.aps.alert = {
-            //             title: 'New device added',
-            //             body: 'A new device has been added',
-            //         };
-            //         notification.payload = options.data;
-            //         await apnsService.send(userId, apnsTokens, notification);
-            //     }
-            //     if (metadata.fcm && fcmTokens.length > 0) {
-            //         await fcmService.send(userId, fcmTokens, {
-            //             notification: options.notification,
-            //             ...metadata.fcm,
-            //             data,
-            //         });
-            //     }
-            //     break;
         }
+
+        if (nbNotificationsSent === 0) throw new Error('No notification sent');
     }
 }

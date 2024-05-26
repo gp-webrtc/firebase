@@ -39,9 +39,9 @@ import { setGlobalOptions } from 'firebase-functions/v2/options';
 // Initialize firebase App
 initializeApp();
 
-setGlobalOptions({ region: 'europe-west3' });
-
 const enforceAppCheck = !process.env.GPW_FIREBASE_EMULATOR ? true : false;
+
+setGlobalOptions({ region: 'europe-west3', enforceAppCheck: enforceAppCheck });
 
 export const auth = {
     // onAccountCreated: functions
