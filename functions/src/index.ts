@@ -78,13 +78,13 @@ export const user = {
     ),
 
     // User notifications
-    sendEncryptedNotification: onCall(
+    sendEncryptedNotifications: onCall(
         {
             region: 'europe-west3',
             enforceAppCheck: enforceAppCheck,
             secrets: ['GPW_APNS_KEY', 'GPW_APNS_KEY_DEV', 'GPW_APNS_KEY_ID', 'GPW_APNS_KEY_ID_DEV', 'GPW_APNS_TEAM_ID'],
         },
-        userNotificationController.onSendEncryptedNotificationCalled
+        userNotificationController.onSendEncryptedNotificationsCalled
     ),
     onNotificationUpdated: onDocumentUpdated(
         'users/{userId}/notifications/{notificationId}',

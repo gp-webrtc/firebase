@@ -20,18 +20,10 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-// type GPWUserNotificationCreateBodyCore = {
-//     encryptedCategoryIdentifier: string;
-//     encryptedPayload: string;
-//     userId: string;
-// };
-
-// export type GPWUserNotificationCreateBody =
-//     | { notification: GPWUserNotificationCreateBodyCore }
-//     | { notifications: GPWUserNotificationCreateBodyCore[] };
-
-export type GPWUserNotificationCreateBody = {
-    userId: string;
+type GPWUserNotificationRequest = {
     encryptedCategoryIdentifier: string;
     encryptedPayload: string;
+    userId: string;
 };
+
+export type GPWUserNotificationsCreateBody = { notifications: GPWUserNotificationRequest[] };
