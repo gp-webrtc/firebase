@@ -27,7 +27,7 @@ import { userNotificationMetadata } from '../data';
 import { GPWUserNotification, GPWUserNotificationOptions } from '../models';
 import { apnsService, fcmService, userNotificationTokenService, userNotificationService } from '../services';
 import { CallableRequest, HttpsError } from 'firebase-functions/v2/https';
-import { GPWUserNotificationCreateBody } from '../models/functions/user_notification_create_body.model';
+import { GPWUserNotificationsCreateBody } from '../models/functions/user_notification_create_body.model';
 import { userNotificationController } from '.';
 
 export class GPWUserNotificationController {
@@ -46,7 +46,7 @@ export class GPWUserNotificationController {
         }
     }
 
-    async onSendEncryptedNotificationCalled(request: CallableRequest<GPWUserNotificationCreateBody>) {
+    async onSendEncryptedNotificationsCalled(request: CallableRequest<GPWUserNotificationsCreateBody>) {
         if (!process.env.GPW_FIREBASE_EMULATOR && request.app === undefined) {
             throw new HttpsError('failed-precondition', 'The function must be called from an App Check verified app.');
         }
@@ -54,16 +54,18 @@ export class GPWUserNotificationController {
         const body = request.data;
 
         if (body) {
-            try {
-                await userNotificationController.send(body.userId, {
-                    type: 'userEncrypted',
-                    data: {
-                        encryptedCategoryIdentifier: body.encryptedCategoryIdentifier,
-                        encryptedPayload: body.encryptedPayload,
-                    },
-                });
-            } catch (error) {
-                throw new HttpsError('internal', `Unable to send notification: ${error}`);
+            for (const notification of body.notifications) {
+                try {
+                    await userNotificationController.send(notification.userId, {
+                        type: 'userEncrypted',
+                        data: {
+                            encryptedCategoryIdentifier: notification.encryptedCategoryIdentifier,
+                            encryptedPayload: notification.encryptedPayload,
+                        },
+                    });
+                } catch (error) {
+                    throw new HttpsError('internal', `Unable to send notification: ${error}`);
+                }
             }
             // if ('notification' in body) {
             //     await userNotificationController.send(body.notification.userId, {
