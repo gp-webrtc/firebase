@@ -32,19 +32,16 @@ service cloud.firestore {
 
         // Verifies that the user creation is valid
         function isValidUserCreation() {
-            return request.resource.data.keys().hasOnly(['userId', 'settings', 'modelVersion', 'creationDate', 'modificationDate']) &&
+            return request.resource.data.keys().hasOnly(['userId', 'modelVersion', 'creationDate', 'modificationDate']) &&
                    request.resource.data.userId == request.auth.uid &&
-                   request.resource.data.modelVersion is string && 
-                   request.resource.data.settings.keys().hasOnly(['notifications']) &&
-                   request.resource.data.settings.notifications.keys().hasOnly(['isEnabled']) &&
-                   request.resource.data.settings.notifications.isEnabled is bool;
+                   request.resource.data.modelVersion is string;
         }
 
-        // Verifies that the user creation is valid
-        function isValidUserUpdate() {
-            // return isValidUserEncryptedDataUpdate() || isValidUserSetingsUpdate();
-            return isValidUserSetingsUpdate()
-        }
+        // // Verifies that the user creation is valid
+        // function isValidUserUpdate() {
+        //     // return isValidUserEncryptedDataUpdate() || isValidUserSetingsUpdate();
+        //     return isValidUserSetingsUpdate()
+        // }
 
         // function isValidUserEncryptedDataUpdate() {
         //     return request.resource.data.userId == request.auth.uid &&
@@ -115,8 +112,8 @@ service cloud.firestore {
         match /users/{userId}  {
             allow read: if isUser(userId);
             allow create: if (isUser(userId) && isValidUserCreation());
-            allow update: if (isUser(userId) && isValidUserUpdate());
-            allow delete: if false;
+            // allow update: if (isUser(userId) && isValidUserUpdate());
+            allow update, delete: if false;
 
             // // User devices documents
             // match /devices/{deviceId}  {
