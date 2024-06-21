@@ -50,13 +50,13 @@ service cloud.firestore {
         //            request.resource.data.isEncrypted is bool;
         // }
 
-        function isValidUserSetingsUpdate() {
-            return request.resource.data.userId == request.auth.uid &&
-                   request.resource.data.diff(resource.data).affectedKeys().hasOnly(['settings']) &&
-                   request.resource.data.settings.diff(resource.data.settings).affectedKeys().hasOnly(['notifications']) &&
-                   request.resource.data.settings.notifications.diff(resource.data.settings.notifications).affectedKeys().hasOnly(['isEnabled']) &&
-                   request.resource.data.settings.notifications.isEnabled is bool
-        }
+        // function isValidUserSetingsUpdate() {
+        //     return request.resource.data.userId == request.auth.uid &&
+        //            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['settings']) &&
+        //            request.resource.data.settings.diff(resource.data.settings).affectedKeys().hasOnly(['notifications']) &&
+        //            request.resource.data.settings.notifications.diff(resource.data.settings.notifications).affectedKeys().hasOnly(['isEnabled']) &&
+        //            request.resource.data.settings.notifications.isEnabled is bool
+        // }
 
         // function isValidUserDeviceCreation(deviceId) {
         //     return request.resource.data.userId == request.auth.uid &&

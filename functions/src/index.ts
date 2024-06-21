@@ -41,7 +41,11 @@ initializeApp();
 
 const enforceAppCheck = !process.env.GPW_FIREBASE_EMULATOR ? true : false;
 
-setGlobalOptions({ region: 'europe-west3', enforceAppCheck: enforceAppCheck });
+setGlobalOptions({
+    region: 'europe-west3',
+    enforceAppCheck: enforceAppCheck,
+    secrets: ['GPW_APNS_KEY', 'GPW_APNS_KEY_DEV', 'GPW_APNS_KEY_ID', 'GPW_APNS_KEY_ID_DEV', 'GPW_APNS_TEAM_ID'],
+});
 
 export const auth = {
     // onAccountCreated: functions

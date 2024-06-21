@@ -43,11 +43,8 @@ export const userNotificationMetadata: GPWUserNotificationMetadata = {
     // },
     userEncrypted: {
         apns: {
-            pushType: 'alert',
-            priority: 10,
             topic: 'org.gpfister.republik',
             category: 'org.gpfister.republik.userEncrypted',
-            expiration: 0,
         },
     },
     call: {

@@ -56,13 +56,32 @@ export class GPWUserNotificationController {
         if (body) {
             for (const notification of body.notifications) {
                 try {
-                    await userNotificationController.send(notification.userId, {
-                        type: 'userEncrypted',
-                        data: {
-                            encryptedCategoryIdentifier: notification.encryptedCategoryIdentifier,
-                            encryptedPayload: notification.encryptedPayload,
-                        },
-                    });
+                    if (notification.pushType === 'alert') {
+                        await userNotificationController.send(notification.userId, {
+                            type: 'userEncrypted',
+                            pushType: notification.pushType,
+                            priority: notification.priority,
+                            collapseId: notification.collapseId,
+                            expiration: notification.expiration,
+                            data: {
+                                encryptedTitle: notification.encryptedTitle,
+                                encryptedBody: notification.encryptedBody,
+                                encryptedCategoryIdentifier: notification.encryptedCategoryIdentifier,
+                                encryptedPayload: notification.encryptedPayload,
+                            },
+                        });
+                    } else {
+                        await userNotificationController.send(notification.userId, {
+                            type: 'userEncrypted',
+                            pushType: notification.pushType,
+                            priority: 5,
+                            expiration: notification.expiration,
+                            data: {
+                                encryptedCategoryIdentifier: notification.encryptedCategoryIdentifier,
+                                encryptedPayload: notification.encryptedPayload,
+                            },
+                        });
+                    }
                 } catch (error) {
                     throw new HttpsError('internal', `Unable to send notification: ${error}`);
                 }
@@ -200,24 +219,50 @@ export class GPWUserNotificationController {
             //     }
             //     break;
             case 'userEncrypted':
-                if (metadata.apns && metadata.apns.pushType === 'alert' && apnsTokens.length > 0) {
+                if (metadata.apns && apnsTokens.length > 0) {
                     const notification = new Notification();
+
+                    // Metadata
                     notification.id = uuid;
-                    notification.pushType = metadata.apns.pushType;
+                    notification.pushType = options.pushType;
                     notification.topic = metadata.apns.topic;
-                    notification.expiry = Math.floor(Date.now() / 1000) + (metadata.apns.expiration ?? 0);
-                    notification.priority = metadata.apns.priority ?? 10;
-                    // notification.collapseId = options.data.collapseId;
-                    notification.mutableContent = true;
-                    notification.aps.category = 'org.gpfister.republik.encrypted';
-                    notification.aps.alert = {
-                        title: 'Encrypted',
-                        body: 'Encrypted',
-                    };
-                    notification.payload = {
-                        encryptedCategoryIdentifier: options.data.encryptedCategoryIdentifier,
-                        encryptedPayload: options.data.encryptedPayload,
-                    };
+                    if (options.expiration && options.expiration > 0) {
+                        notification.expiry = Math.floor(Date.now() / 1000) + (options.expiration ?? 0);
+                    } else {
+                        notification.expiry = 0;
+                    }
+
+                    // Alert
+                    if (options.pushType == 'alert') {
+                        notification.aps.category = 'org.gpfister.republik.encrypted';
+                        notification.aps.alert = {
+                            title: 'Encrypted',
+                            body: 'Encrypted',
+                        };
+                        notification.mutableContent = true;
+                        notification.priority = options.priority;
+                        notification.payload = {
+                            encryptedTitle: options.data.encryptedTitle,
+                            encryptedBody: options.data.encryptedBody,
+                            encryptedCategoryIdentifier: options.data.encryptedCategoryIdentifier,
+                            encryptedPayload: options.data.encryptedPayload,
+                        };
+                        if (options.collapseId) {
+                            notification.collapseId = options.collapseId;
+                        }
+                    }
+
+                    // Background
+                    if (options.pushType == 'background') {
+                        notification.aps['content-available'] = 1;
+                        notification.payload = {
+                            categoryIdentifier: 'org.gpfister.republik.encrypted',
+                            encryptedCategoryIdentifier: options.data.encryptedCategoryIdentifier,
+                            encryptedPayload: options.data.encryptedPayload,
+                        };
+                    }
+
+                    // Send notification
                     await apnsService.send(userId, apnsTokens, notification);
                     nbNotificationsSent += 1;
                 }

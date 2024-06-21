@@ -27,6 +27,12 @@ type GPWUserNotificationVoIPMetadata = {
     pushType: 'voip';
     priority: 10;
     topic: string;
+    expiration?: number;
+};
+
+type GPWUserEncryptedNotificationMetadata = {
+    topic: string;
+    category: string;
 };
 
 type GPWUserNotificationAlertMetadata = {
@@ -34,6 +40,7 @@ type GPWUserNotificationAlertMetadata = {
     topic: string;
     priority?: 5 | 10;
     category: string;
+    expiration?: number;
 };
 
 type GPWUserNotificationBackgroundMetadata = {
@@ -41,6 +48,7 @@ type GPWUserNotificationBackgroundMetadata = {
     topic: string;
     priority: 1 | 5 | 10;
     category: string;
+    expiration?: number;
 };
 
 export type GPWUserNotificationMetadata = {
@@ -50,10 +58,10 @@ export type GPWUserNotificationMetadata = {
             webpush?: WebpushConfig;
             fcmOptions?: FcmOptions;
         };
-        apns?: { expiration?: number } & (
+        apns?:
+            | GPWUserEncryptedNotificationMetadata
             | GPWUserNotificationVoIPMetadata
             | GPWUserNotificationAlertMetadata
-            | GPWUserNotificationBackgroundMetadata
-        );
+            | GPWUserNotificationBackgroundMetadata;
     };
 };
