@@ -20,13 +20,24 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import { GPWUserEnryptedNotificationMetadata } from '../shared/user_encrypted_notification_metadata.model';
-
 type GPWUserNotificationRequest = {
-    metadata: GPWUserEnryptedNotificationMetadata;
-    encryptedCategoryIdentifier: string;
-    encryptedPayload: string;
+    priority: 1 | 5 | 10;
+    expiration?: number;
+    collapseId?: string;
     userId: string;
-};
+} & (
+    | {
+          pushType: 'alert';
+          encryptedTitle: string;
+          encryptedBody?: string;
+          encryptedCategoryIdentifier: string;
+          encryptedPayload: string;
+      }
+    | {
+          pushType: 'background';
+          encryptedCategoryIdentifier: string;
+          encryptedPayload: string;
+      }
+);
 
 export type GPWUserNotificationsCreateBody = { notifications: GPWUserNotificationRequest[] };

@@ -20,32 +20,27 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import { GPWUserEnryptedNotificationMetadata } from './user_encrypted_notification_metadata.model';
-
-// import { Notification } from 'firebase-admin/messaging';
-
-// import { GPWUserDevice } from '../documents/user_device.model';
-
-// type GPWUserNotificationOnDeviceAddedOptions = {
-//     type: 'userDeviceAdded';
-//     data: GPWUserDevice;
-//     notification: Notification;
-// };
-
-type GPWUserNotificationCallOptions = {
-    type: 'call' | 'userCallReceived';
-    data: { callId: string; callerId: string; displayName: string; sdp: string };
-};
-
 type GPWUserEncryptedNotification = {
     type: 'userEncrypted';
-    metadata: GPWUserEnryptedNotificationMetadata;
+    expiration?: number;
     data: {
         encryptedCategoryIdentifier: string;
         encryptedPayload: string;
     };
-};
+} & (
+    | {
+          pushType: 'alert';
+          priority: 1 | 5 | 10;
+          collapseId?: string;
+          data: {
+              encryptedTitle: string;
+              encryptedBody?: string;
+          };
+      }
+    | {
+          pushType: 'background';
+          priority: 5;
+      }
+);
 
-export type GPWUserNotificationOptions =
-    // | GPWUserNotificationOnDeviceAddedOptions
-    GPWUserNotificationCallOptions | GPWUserEncryptedNotification;
+export type GPWUserNotificationOptions = GPWUserEncryptedNotification;

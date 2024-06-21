@@ -26,11 +26,44 @@ import { logger } from 'firebase-functions/v2';
 
 import { GPWUser } from '../models';
 import { userNotificationTokenService, userService } from '../services';
+// import { userNotificationController } from '.';
 
 export class GPWUserController {
     async onDocumentCreated(event: FirestoreEvent<DocumentSnapshot | undefined, { userId: string }>) {
+        const userId = event.params.userId;
         const user = event.data;
-        logger.debug(`Document /users/${event.params.userId} created`, user);
+        logger.debug(`Document /users/${userId} created`, user);
+
+        // Example alert notification
+        // const data = {
+        //     encryptedTitle: Buffer.from('New friend added', 'utf-8').toString('base64'),
+        //     encryptedBody: Buffer.from('A new friend has been added', 'utf-8').toString('base64'),
+        //     encryptedCategoryIdentifier: Buffer.from('org.gpfister.republik.newContact', 'utf-8').toString('base64'),
+        //     encryptedPayload: '',
+        // };
+        // const users = await userService.getAll();
+        // for (const user of users) {
+        //     if (user.userId !== userId) {
+        //         data.encryptedPayload = Buffer.from(
+        //             JSON.stringify({
+        //                 userId: user.userId,
+        //                 contactId: userId,
+        //                 displayName: 'Automatically added',
+        //                 publicKey: '',
+        //                 nonce: 0,
+        //             }),
+        //             'utf-8'
+        //         ).toString('base64');
+        //         userNotificationController.send(user.userId, {
+        //             type: 'userEncrypted',
+        //             pushType: 'alert',
+        //             priority: 5,
+        //             expiration: 7 * 24 * 3600,
+        //             collapseId: userId,
+        //             data: { ...data },
+        //         });
+        //     }
+        // }
     }
 
     async onDocumentUpdated(event: FirestoreEvent<Change<QueryDocumentSnapshot> | undefined, { userId: string }>) {
@@ -58,6 +91,34 @@ export class GPWUserController {
     }
 
     async onDocumentDeleted(event: FirestoreEvent<DocumentSnapshot | undefined, { userId: string }>) {
-        logger.debug(`Document /users/${event.params.userId} deleted`);
+        const userId = event.params.userId;
+        logger.debug(`Document /users/${userId} deleted`);
+
+        // // Example background notification
+        // const data = {
+        //     encryptedCategoryIdentifier: Buffer.from('org.gpfister.republik.deletedContact', 'utf-8').toString(
+        //         'base64'
+        //     ),
+        //     encryptedPayload: '',
+        // };
+        // const users = await userService.getAll();
+        // for (const user of users) {
+        //     if (user.userId !== userId) {
+        //         data.encryptedPayload = Buffer.from(
+        //             JSON.stringify({
+        //                 userId: user.userId,
+        //                 contactId: userId,
+        //             }),
+        //             'utf-8'
+        //         ).toString('base64');
+        //         userNotificationController.send(user.userId, {
+        //             type: 'userEncrypted',
+        //             pushType: 'background',
+        //             priority: 5,
+        //             expiration: 7 * 24 * 3600,
+        //             data: { ...data },
+        //         });
+        //     }
+        // }
     }
 }

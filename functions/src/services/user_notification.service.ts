@@ -20,7 +20,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import * as UUID from 'uuid';
+import { v4 as UUID } from 'uuid';
 import { firestore } from 'firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
 
@@ -37,7 +37,7 @@ export class GPWUserNotificationService {
         const ts = Timestamp.now();
 
         const notificationId = db.collection(`/users/${userId}/notifications`).doc().id;
-        const uuid = UUID.v4();
+        const uuid = UUID();
 
         const notification: GPWUserNotification = {
             userId,
@@ -82,23 +82,9 @@ export class GPWUserNotificationService {
     | { callId: string; callerId: string; displayName: string }
         | { encryptedCategoryIdentifier: string; encryptedPayload: string } {
         switch (options.type) {
-            case 'userCallReceived':
-                return {
-                    ...options.data,
-                };
-            // case 'userDeviceAdded':
-            //     return {
-            //         path: `/users/${options.data.userId}/devices/${options.data.deviceId}`,
-            //     };
             case 'userEncrypted':
                 return {
                     ...options.data,
-                };
-            case 'call':
-                return {
-                    callId: options.data.callId,
-                    callerId: options.data.callerId,
-                    displayName: options.data.displayName,
                 };
         }
     }
