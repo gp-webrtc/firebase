@@ -58,6 +58,7 @@ export class GPWUserNotificationController {
                 try {
                     await userNotificationController.send(notification.userId, {
                         type: 'userEncrypted',
+                        metadata: notification.metadata,
                         data: {
                             encryptedCategoryIdentifier: notification.encryptedCategoryIdentifier,
                             encryptedPayload: notification.encryptedPayload,
@@ -200,20 +201,30 @@ export class GPWUserNotificationController {
             //     }
             //     break;
             case 'userEncrypted':
-                if (metadata.apns && metadata.apns.pushType === 'alert' && apnsTokens.length > 0) {
+                if (metadata.apns && apnsTokens.length > 0) {
                     const notification = new Notification();
                     notification.id = uuid;
-                    notification.pushType = metadata.apns.pushType;
+                    notification.pushType = options.metadata.pushType;
                     notification.topic = metadata.apns.topic;
-                    notification.expiry = Math.floor(Date.now() / 1000) + (metadata.apns.expiration ?? 0);
-                    notification.priority = metadata.apns.priority ?? 10;
-                    // notification.collapseId = options.data.collapseId;
+                    if (options.metadata.expiration && options.metadata.expiration > 0) {
+                        notification.expiry = Math.floor(Date.now() / 1000) + (options.metadata.expiration ?? 0);
+                    } else {
+                        notification.expiry = 0;
+                    }
+                    notification.priority = options.metadata.priority;
+                    if (options.metadata.collapseId) {
+                        notification.collapseId = options.metadata.collapseId;
+                    }
                     notification.mutableContent = true;
                     notification.aps.category = 'org.gpfister.republik.encrypted';
-                    notification.aps.alert = {
-                        title: 'Encrypted',
-                        body: 'Encrypted',
-                    };
+                    if (options.metadata.pushType == 'alert') {
+                        notification.aps.alert = {
+                            title: 'Encrypted',
+                            body: 'Encrypted',
+                        };
+                    } else {
+                        notification.aps['content-available'] = 1;
+                    }
                     notification.payload = {
                         encryptedCategoryIdentifier: options.data.encryptedCategoryIdentifier,
                         encryptedPayload: options.data.encryptedPayload,

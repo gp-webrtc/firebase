@@ -20,7 +20,10 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+import { GPWUserEnryptedNotificationMetadata } from '../shared/user_encrypted_notification_metadata.model';
+
 type GPWUserNotificationRequest = {
+    metadata: GPWUserEnryptedNotificationMetadata;
     encryptedCategoryIdentifier: string;
     encryptedPayload: string;
     userId: string;
