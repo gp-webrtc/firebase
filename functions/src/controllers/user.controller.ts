@@ -25,7 +25,7 @@ import { Change, DocumentSnapshot, FirestoreEvent, QueryDocumentSnapshot } from 
 import { logger } from 'firebase-functions/v2';
 
 import { GPWUser } from '../models';
-import { userNotificationTokenService, userService } from '../services';
+// import { userNotificationTokenService, userService } from '../services';
 // import { userNotificationController } from '.';
 
 export class GPWUserController {
@@ -68,7 +68,6 @@ export class GPWUserController {
 
     async onDocumentUpdated(event: FirestoreEvent<Change<QueryDocumentSnapshot> | undefined, { userId: string }>) {
         if (event.data) {
-            const userId = event.params.userId;
             const before = event.data.before.data() as GPWUser;
             const after = event.data.after.data() as GPWUser;
 
@@ -82,11 +81,11 @@ export class GPWUserController {
                 return;
             }
 
-            // If this is a monitored change
-            if (!_.isEqual(before.settings, after.settings)) {
-                if (!after.settings.notifications.isEnabled) await userNotificationTokenService.deleteAll(userId);
-                await userService.updateModificationDate(userId);
-            }
+            // // If this is a monitored change
+            // if (!_.isEqual(before.settings, after.settings)) {
+            //     if (!after.settings.notifications.isEnabled) await userNotificationTokenService.deleteAll(userId);
+            //     await userService.updateModificationDate(userId);
+            // }
         }
     }
 

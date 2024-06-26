@@ -21,17 +21,12 @@
 //
 
 import { Timestamp } from 'firebase-admin/firestore';
-import { GPWUserNotificationType } from '..';
 
 export type GPWUserNotification = {
     userId: string;
     notificationId: string;
-    type: GPWUserNotificationType;
-    payload:
-        | { path: string }
-        | { callId: string; callerId: string; displayName: string }
-        | { encryptedPayload: string };
     uuid: string;
+    options: string;
     wasRead: boolean;
     wasReceived: boolean;
     creationDate: Timestamp;

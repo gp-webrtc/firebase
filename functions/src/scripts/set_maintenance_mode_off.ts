@@ -38,10 +38,20 @@ console.log('Setting maintenance mode off...');
 
 async function setMaintenanceOff() {
     const db = firestore();
-    await db.collection('/core').doc('status').update({
-        maintenanceMode: false,
-        modificationDate: FieldValue.serverTimestamp(),
-    });
+    const doc = await db.collection('/core').doc('status').get();
+    if (doc.exists) {
+        await db.collection('/core').doc('status').update({
+            maintenanceMode: false,
+            creationDate: FieldValue.serverTimestamp(),
+            modificationDate: FieldValue.serverTimestamp(),
+        });
+    } else {
+        await db.collection('/core').doc('status').set({
+            maintenanceMode: false,
+            creationDate: FieldValue.serverTimestamp(),
+            modificationDate: FieldValue.serverTimestamp(),
+        });
+    }
 }
 
 setMaintenanceOff().then(() => {

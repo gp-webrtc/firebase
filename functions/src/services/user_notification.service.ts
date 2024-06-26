@@ -42,9 +42,8 @@ export class GPWUserNotificationService {
         const notification: GPWUserNotification = {
             userId,
             notificationId,
-            type: options.type,
-            payload: this.documentData(options),
             uuid,
+            options: JSON.stringify(options),
             wasRead: false,
             wasReceived: false,
             creationDate: ts,
@@ -78,14 +77,30 @@ export class GPWUserNotificationService {
         }
     }
 
-    documentData(options: GPWUserNotificationOptions): // | { path: string }
-    | { callId: string; callerId: string; displayName: string }
-        | { encryptedCategoryIdentifier: string; encryptedPayload: string } {
-        switch (options.type) {
-            case 'userEncrypted':
-                return {
-                    ...options.data,
-                };
-        }
-    }
+    // documentData(options: GPWUserNotificationOptions): // | { path: string }
+    // | { callId: string; callerId: string; displayName: string }
+    //     | {
+    //           encryptedTitle?: string;
+    //           encryptedBody?: string;
+    //           encryptedCategoryIdentifier: string;
+    //           encryptedPayload: string;
+    //       } {
+    //     switch (options.type) {
+    //         case 'userEncrypted':
+    //             const data: {
+    //                 encryptedTitle?: string;
+    //                 encryptedBody?: string;
+    //                 encryptedCategoryIdentifier: string;
+    //                 encryptedPayload: string;
+    //             } = {
+    //                 encryptedCategoryIdentifier: options.encryptedCategoryIdentifier,
+    //                 encryptedPayload: options.encryptedPayload,
+    //             };
+    //             if (options.pushType === 'alert') {
+    //                 data.encryptedTitle = options.encryptedTitle;
+    //                 if (data.encryptedBody) data.encryptedBody = options.encryptedBody;
+    //             }
+    //             return data;
+    //     }
+    // }
 }

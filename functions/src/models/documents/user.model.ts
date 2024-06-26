@@ -21,16 +21,12 @@
 //
 
 import { Timestamp } from 'firebase-admin/firestore';
-import { GPWUserSettings } from '../shared/user_settings.model';
 
 type GPSUser_1 = {
     userId: string;
-    // isEncrypted: boolean;
-    settings: GPWUserSettings;
-    // encrypted: string;
+    modelVersion: '1';
     creationDate: Timestamp;
     modificationDate: Timestamp;
-    modelVersion: '1';
 };
 
 export type GPWUser = GPSUser_1;

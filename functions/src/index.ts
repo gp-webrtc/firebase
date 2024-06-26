@@ -48,11 +48,7 @@ setGlobalOptions({
 });
 
 export const auth = {
-    // onAccountCreated: functions
-    //     .runWith({ secrets: ['RANDOMMER_IO_API_KEY'] })
-    //     .region('europe-west3')
-    //     .auth.user()
-    //     .onCreate(authController.onAccountCreated),
+    onAccountCreated: functions.region('europe-west3').auth.user().onCreate(authController.onAccountCreated),
     onAccountDeleted: functions.region('europe-west3').auth.user().onDelete(authController.onAccountDeleted),
 };
 
@@ -72,24 +68,11 @@ export const user = {
     // onDeviceUpdated: onDocumentUpdated('users/{userId}/devices/{deviceId}', userDeviceController.onDocumentUpdated),
 
     // User notification token callable functions
-    insertOrUpdateNotificationToken: onCall(
-        { region: 'europe-west3', enforceAppCheck: enforceAppCheck },
-        userNotificationTokenController.onInsertOrUpdateFunctionCalled
-    ),
-    deleteNotificationTokenDelete: onCall(
-        { region: 'europe-west3', enforceAppCheck: enforceAppCheck },
-        userNotificationTokenController.onDeleteFunctionCalled
-    ),
+    insertOrUpdateNotificationToken: onCall(userNotificationTokenController.onInsertOrUpdateFunctionCalled),
+    deleteNotificationTokenDelete: onCall(userNotificationTokenController.onDeleteFunctionCalled),
 
     // User notifications
-    sendEncryptedNotifications: onCall(
-        {
-            region: 'europe-west3',
-            enforceAppCheck: enforceAppCheck,
-            secrets: ['GPW_APNS_KEY', 'GPW_APNS_KEY_DEV', 'GPW_APNS_KEY_ID', 'GPW_APNS_KEY_ID_DEV', 'GPW_APNS_TEAM_ID'],
-        },
-        userNotificationController.onSendEncryptedNotificationsCalled
-    ),
+    sendEncryptedNotifications: onCall(userNotificationController.onSendEncryptedNotificationsCalled),
     onNotificationUpdated: onDocumentUpdated(
         'users/{userId}/notifications/{notificationId}',
         userNotificationController.onDocumentUpdated
