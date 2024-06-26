@@ -36,14 +36,24 @@ if (process.env.GOOGLE_CLOUD_CREDENTIALS) {
 
 console.log('Setting maintenance mode on...');
 
-async function setMaintenanceOff() {
+async function setMaintenanceOn() {
     const db = firestore();
-    await db.collection('/core').doc('status').update({
-        maintenanceMode: true,
-        modificationDate: FieldValue.serverTimestamp(),
-    });
+    const doc = await db.collection('/core').doc('status').get();
+    if (doc.exists) {
+        await db.collection('/core').doc('status').update({
+            maintenanceMode: true,
+            creationDate: FieldValue.serverTimestamp(),
+            modificationDate: FieldValue.serverTimestamp(),
+        });
+    } else {
+        await db.collection('/core').doc('status').set({
+            maintenanceMode: true,
+            creationDate: FieldValue.serverTimestamp(),
+            modificationDate: FieldValue.serverTimestamp(),
+        });
+    }
 }
 
-setMaintenanceOff().then(() => {
+setMaintenanceOn().then(() => {
     console.log('Maintenance mode set');
 });

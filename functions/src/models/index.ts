@@ -46,4 +46,3 @@ export type { GPWUserNotificationDeviceToken } from './shared/user_notification_
 export type { GPWUserNotificationMetadata } from './shared/user_notification_metadata.model';
 export type { GPWUserNotificationOptions } from './shared/user_notification_options.model';
 export type { GPWUserNotificationType } from './shared/user_notification_type.model';
-export type { GPWUserSettings } from './shared/user_settings.model';

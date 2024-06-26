@@ -37,17 +37,29 @@ if (process.env.GOOGLE_CLOUD_CREDENTIALS) {
 
 console.log('Updating core data...');
 
-async function setMaintenanceOff() {
+async function setVersion() {
     const db = firestore();
-    await db
-        .collection('/core')
-        .doc('version')
-        .update({
-            ...coreVersion,
-            modificationDate: FieldValue.serverTimestamp(),
-        });
+    const doc = await db.collection('/core').doc('version').get();
+    if (doc.exists) {
+        await db
+            .collection('/core')
+            .doc('version')
+            .update({
+                ...coreVersion,
+                modificationDate: FieldValue.serverTimestamp(),
+            });
+    } else {
+        await db
+            .collection('/core')
+            .doc('version')
+            .set({
+                ...coreVersion,
+                creationDate: FieldValue.serverTimestamp(),
+                modificationDate: FieldValue.serverTimestamp(),
+            });
+    }
 }
 
-setMaintenanceOff().then(() => {
-    console.log('Maintenance mode set');
+setVersion().then(() => {
+    console.log('Version have been updated');
 });

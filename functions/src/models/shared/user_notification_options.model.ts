@@ -23,19 +23,15 @@
 type GPWUserEncryptedNotification = {
     type: 'userEncrypted';
     expiration?: number;
-    data: {
-        encryptedCategoryIdentifier: string;
-        encryptedPayload: string;
-    };
+    encryptedCategoryIdentifier: string;
+    encryptedPayload: string;
 } & (
     | {
           pushType: 'alert';
           priority: 1 | 5 | 10;
           collapseId?: string;
-          data: {
-              encryptedTitle: string;
-              encryptedBody?: string;
-          };
+          encryptedTitle: string;
+          encryptedBody?: string;
       }
     | {
           pushType: 'background';

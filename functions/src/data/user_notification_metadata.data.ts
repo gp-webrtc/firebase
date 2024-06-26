@@ -23,15 +23,15 @@
 import { GPWUserNotificationMetadata } from '../models/shared/user_notification_metadata.model';
 
 export const userNotificationMetadata: GPWUserNotificationMetadata = {
-    userCallReceived: {
-        apns: {
-            pushType: 'alert',
-            priority: 10,
-            topic: 'org.gpfister.republik',
-            category: 'org.gpfister.republik.userCallReceived',
-            expiration: 0,
-        },
-    },
+    // userCallReceived: {
+    //     apns: {
+    //         pushType: 'alert',
+    //         priority: 10,
+    //         topic: 'org.gpfister.republik',
+    //         category: 'org.gpfister.republik.userCallReceived',
+    //         expiration: 0,
+    //     },
+    // },
     // userDeviceAdded: {
     //     apns: {
     //         pushType: 'alert',
@@ -47,12 +47,12 @@ export const userNotificationMetadata: GPWUserNotificationMetadata = {
             category: 'org.gpfister.republik.userEncrypted',
         },
     },
-    call: {
-        apns: {
-            pushType: 'voip',
-            priority: 10,
-            topic: 'org.gpfister.republik.voip',
-            expiration: 5, // 5 Seconds
-        },
-    },
+    // call: {
+    //     apns: {
+    //         pushType: 'voip',
+    //         priority: 10,
+    //         topic: 'org.gpfister.republik.voip',
+    //         expiration: 5, // 5 Seconds
+    //     },
+    // },
 };

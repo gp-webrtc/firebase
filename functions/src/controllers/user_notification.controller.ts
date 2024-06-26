@@ -20,6 +20,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+import { logger } from 'firebase-functions/v2';
 import { Change, FirestoreEvent, QueryDocumentSnapshot } from 'firebase-functions/v2/firestore';
 import { Notification } from '@parse/node-apn';
 
@@ -63,12 +64,10 @@ export class GPWUserNotificationController {
                             priority: notification.priority,
                             collapseId: notification.collapseId,
                             expiration: notification.expiration,
-                            data: {
-                                encryptedTitle: notification.encryptedTitle,
-                                encryptedBody: notification.encryptedBody,
-                                encryptedCategoryIdentifier: notification.encryptedCategoryIdentifier,
-                                encryptedPayload: notification.encryptedPayload,
-                            },
+                            encryptedTitle: notification.encryptedTitle,
+                            encryptedBody: notification.encryptedBody,
+                            encryptedCategoryIdentifier: notification.encryptedCategoryIdentifier,
+                            encryptedPayload: notification.encryptedPayload,
                         });
                     } else {
                         await userNotificationController.send(notification.userId, {
@@ -76,13 +75,12 @@ export class GPWUserNotificationController {
                             pushType: notification.pushType,
                             priority: 5,
                             expiration: notification.expiration,
-                            data: {
-                                encryptedCategoryIdentifier: notification.encryptedCategoryIdentifier,
-                                encryptedPayload: notification.encryptedPayload,
-                            },
+                            encryptedCategoryIdentifier: notification.encryptedCategoryIdentifier,
+                            encryptedPayload: notification.encryptedPayload,
                         });
                     }
                 } catch (error) {
+                    logger.error(`Unable to send notification: ${error}`);
                     throw new HttpsError('internal', `Unable to send notification: ${error}`);
                 }
             }
@@ -119,7 +117,26 @@ export class GPWUserNotificationController {
 
         const metadata = userNotificationMetadata[options.type];
 
-        const data = { json: JSON.stringify(options.data) };
+        const data = { json: '{}' };
+
+        if (options.type === 'userEncrypted') {
+            switch (options.pushType) {
+                case 'alert':
+                    data.json = JSON.stringify({
+                        encryptedTitle: options.encryptedTitle,
+                        encryptedBody: options.encryptedBody,
+                        encryptedCategoryIdentifier: options.encryptedCategoryIdentifier,
+                        encryptedPayload: options.encryptedPayload,
+                    });
+                    break;
+                case 'background':
+                    data.json = JSON.stringify({
+                        encryptedCategoryIdentifier: options.encryptedCategoryIdentifier,
+                        encryptedPayload: options.encryptedPayload,
+                    });
+                    break;
+            }
+        }
 
         const tokens = await userNotificationTokenService.getAll(userId);
 
@@ -242,10 +259,10 @@ export class GPWUserNotificationController {
                         notification.mutableContent = true;
                         notification.priority = options.priority;
                         notification.payload = {
-                            encryptedTitle: options.data.encryptedTitle,
-                            encryptedBody: options.data.encryptedBody,
-                            encryptedCategoryIdentifier: options.data.encryptedCategoryIdentifier,
-                            encryptedPayload: options.data.encryptedPayload,
+                            encryptedTitle: options.encryptedTitle,
+                            encryptedBody: options.encryptedBody,
+                            encryptedCategoryIdentifier: options.encryptedCategoryIdentifier,
+                            encryptedPayload: options.encryptedPayload,
                         };
                         if (options.collapseId) {
                             notification.collapseId = options.collapseId;
@@ -257,8 +274,8 @@ export class GPWUserNotificationController {
                         notification.aps['content-available'] = 1;
                         notification.payload = {
                             categoryIdentifier: 'org.gpfister.republik.encrypted',
-                            encryptedCategoryIdentifier: options.data.encryptedCategoryIdentifier,
-                            encryptedPayload: options.data.encryptedPayload,
+                            encryptedCategoryIdentifier: options.encryptedCategoryIdentifier,
+                            encryptedPayload: options.encryptedPayload,
                         };
                     }
 

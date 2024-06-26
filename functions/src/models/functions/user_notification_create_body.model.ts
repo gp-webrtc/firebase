@@ -21,22 +21,21 @@
 //
 
 type GPWUserNotificationRequest = {
-    priority: 1 | 5 | 10;
-    expiration?: number;
-    collapseId?: string;
     userId: string;
+    expiration?: number;
+    encryptedCategoryIdentifier: string;
+    encryptedPayload: string;
 } & (
     | {
           pushType: 'alert';
+          priority: 1 | 5 | 10;
+          collapseId?: string;
           encryptedTitle: string;
           encryptedBody?: string;
-          encryptedCategoryIdentifier: string;
-          encryptedPayload: string;
       }
     | {
           pushType: 'background';
-          encryptedCategoryIdentifier: string;
-          encryptedPayload: string;
+          priority: 5;
       }
 );
 
