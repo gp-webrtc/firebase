@@ -30,6 +30,6 @@
         "delete:functions": "firebase-cli functions:delete core-initEmulator --non-interactive -f"
     },
     "dependencies": {
-        "firebase-tools": "^13.11.4"
+        "firebase-tools": "^13.13.0"
     }
 }
